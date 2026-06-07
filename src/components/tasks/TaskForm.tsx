@@ -9,6 +9,11 @@ interface TaskFormProps {
    onCancel: () => void;
 }
 
+const inputClass =
+   'w-full bg-dark-hover text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-colors';
+
+const labelClass = 'block text-sm text-content-secondary mb-1.5';
+
 export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
    const [title, setTitle] = useState(task?.title || '');
    const [description, setDescription] = useState(task?.description || '');
@@ -50,11 +55,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
          const res = await fetch('/api/ai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-               action: 'priority',
-               title,
-               description,
-            }),
+            body: JSON.stringify({ action: 'priority', title, description }),
          });
          const data = await res.json();
          if (data.priority) setPriority(data.priority);
@@ -69,15 +70,14 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
 
    return (
       <div className='bg-dark-card border border-dark-border rounded-xl p-5'>
-         <h2 className='font-semibold text-content-primary mb-4'>
+         <h2 className='font-semibold text-content-primary mb-4 text-sm'>
             {task ? 'Edit task' : 'New task'}
          </h2>
 
          <form onSubmit={handleSubmit} className='space-y-3'>
-            {/* Title */}
             <div>
-               <label className='block text-sm font-medium text-content-primary mb-1'>
-                  Title <span className='text-red-400'>*</span>
+               <label className={labelClass}>
+                  Title <span className='text-accent-red'>*</span>
                </label>
                <input
                   type='text'
@@ -85,36 +85,30 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder='What needs to be done?'
                   required
-                  className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
+                  className={inputClass}
                />
             </div>
 
-            {/* Description */}
             <div>
-               <label className='block text-sm font-medium text-content-primary mb-1'>
-                  Description
-               </label>
+               <label className={labelClass}>Description</label>
                <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder='Optional details...'
                   rows={2}
-                  className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
+                  className={`${inputClass} resize-none`}
                />
             </div>
 
-            {/* Priority + Status + Category */}
             <div className='grid grid-cols-3 gap-3'>
                <div>
-                  <label className='block text-sm font-medium text-content-primary mb-1'>
-                     Priority
-                  </label>
+                  <label className={labelClass}>Priority</label>
                   <select
                      value={priority}
                      onChange={(e) =>
                         setPriority(e.target.value as TaskPriority)
                      }
-                     className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className={inputClass}
                   >
                      <option value='low'>Low</option>
                      <option value='medium'>Medium</option>
@@ -123,13 +117,11 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                </div>
 
                <div>
-                  <label className='block text-sm font-medium text-content-primary mb-1'>
-                     Status
-                  </label>
+                  <label className={labelClass}>Status</label>
                   <select
                      value={status}
                      onChange={(e) => setStatus(e.target.value as TaskStatus)}
-                     className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className={inputClass}
                   >
                      <option value='todo'>To Do</option>
                      <option value='in-progress'>In Progress</option>
@@ -138,13 +130,11 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                </div>
 
                <div>
-                  <label className='block text-sm font-medium text-content-primary mb-1'>
-                     Category
-                  </label>
+                  <label className={labelClass}>Category</label>
                   <select
                      value={category}
                      onChange={(e) => setCategory(e.target.value)}
-                     className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className={inputClass}
                   >
                      <option value='general'>General</option>
                      <option value='work'>Work</option>
@@ -155,50 +145,39 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                </div>
             </div>
 
-            {/* Estimated minutes */}
             <div>
-               <label className='block text-sm font-medium text-content-primary mb-1'>
-                  Estimated minutes
-               </label>
+               <label className={labelClass}>Estimated minutes</label>
                <input
                   type='number'
                   value={estimatedMinutes}
                   onChange={(e) => setEstimatedMinutes(e.target.value)}
                   placeholder='e.g. 30'
                   min={0}
-                  className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
+                  className={inputClass}
                />
             </div>
 
-            {/* AI suggest button */}
             <button
                type='button'
                onClick={handleAiSuggest}
                disabled={aiLoading || !title.trim()}
-               className='w-full border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-medium py-2 rounded-lg transition-colors disabled:opacity-50'
+               className='w-full border border-accent-purple text-accent-purple hover:bg-purple-950 text-sm font-medium py-2 rounded-lg transition-colors disabled:opacity-40'
             >
-               {aiLoading
-                  ? '🤖 Thinking...'
-                  : '🤖 AI: Suggest priority & time estimate'}
+               {aiLoading ? 'Thinking...' : '✦ AI: Suggest priority & estimate'}
             </button>
 
-            {/* Submit + Cancel */}
-            <div className='flex gap-3 pt-1'>
+            <div className='flex gap-2 pt-1'>
                <button
                   type='submit'
                   disabled={loading || !title.trim()}
-                  className='flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 rounded-lg text-sm transition-colors'
+                  className='flex-1 bg-accent-blue hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg text-sm transition-colors'
                >
-                  {loading
-                     ? 'Saving...'
-                     : task
-                       ? 'Save changes'
-                       : 'Create task'}
+                  {loading ? 'Saving...' : task ? 'Save changes' : 'Create task'}
                </button>
                <button
                   type='button'
                   onClick={onCancel}
-                  className='flex-1 border border-dark-border hover:bg-dark-hover text-content-secondary font-medium py-2 rounded-lg text-sm transition-colors'
+                  className='flex-1 bg-dark-hover hover:bg-dark-border text-content-secondary font-medium py-2 rounded-lg text-sm transition-colors'
                >
                   Cancel
                </button>

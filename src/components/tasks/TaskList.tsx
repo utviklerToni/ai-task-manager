@@ -173,7 +173,7 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
                         setEditTask(null);
                         setShowAi(false);
                      }}
-                     className='bg-content-primary hover:bg-white text-dark-page text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors'
+                     className='bg-accent-blue hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors'
                   >
                      + New Task
                   </button>
@@ -183,7 +183,7 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
                         setShowForm(false);
                         setEditTask(null);
                      }}
-                     className='bg-dark-card hover:bg-dark-hover border border-dark-border text-content-primary text-sm font-medium px-5 py-2.5 rounded-lg transition-colors'
+                     className='hover:text-purple-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors'
                   >
                      🤖 AI Assistant
                   </button>
@@ -329,7 +329,7 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
                onChange={(e) =>
                   setFilters((f) => ({ ...f, search: e.target.value }))
                }
-               className='bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm flex-1 min-w-[160px] placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
+               className='bg-dark-hover text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm flex-1 min-w-[160px] placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-colors'
             />
 
             <select
@@ -340,7 +340,7 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
                      status: e.target.value as TaskStatus | 'all',
                   }))
                }
-               className='bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+               className='bg-dark-hover text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-colors'
             >
                <option value='all'>All status</option>
                <option value='todo'>To Do</option>
@@ -356,7 +356,7 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
                      priority: e.target.value as TaskPriority | 'all',
                   }))
                }
-               className='bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+               className='bg-dark-hover text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-colors'
             >
                <option value='all'>All priorities</option>
                <option value='high'>High</option>
@@ -369,7 +369,7 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
                onChange={(e) =>
                   setFilters((f) => ({ ...f, category: e.target.value }))
                }
-               className='bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+               className='bg-dark-hover text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-colors'
             >
                {categories.map((c) => (
                   <option key={c} value={c}>

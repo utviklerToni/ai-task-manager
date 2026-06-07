@@ -2,22 +2,24 @@
 
 import { Task } from '@/types';
 import { useState } from 'react';
+import { Sparkles, Wrench } from 'lucide-react';
 
 interface AiAssistantProps {
    onTasksCreated: (tasks: Task[]) => void;
 }
+
+const inputClass =
+   'w-full bg-dark-hover text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent-purple focus:border-transparent transition-colors';
 
 export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
    const [activeTab, setActiveTab] = useState<'natural' | 'breakdown'>(
       'natural',
    );
 
-   // Natural language state
    const [input, setInput] = useState('');
    const [nlLoading, setNlLoading] = useState(false);
    const [nlMessage, setNlMessage] = useState('');
 
-   // Breakdown state
    const [breakdownTitle, setBreakdownTitle] = useState('');
    const [breakdownLoading, setBreakdownLoading] = useState(false);
    const [breakdownResult, setBreakdownResult] = useState<{
@@ -33,26 +35,19 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
       setNlMessage('');
 
       try {
-         // Step 1 — ask Claude to generate task structure
          const aiRes = await fetch('/api/ai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-               action: 'natural-language',
-               input,
-            }),
+            body: JSON.stringify({ action: 'natural-language', input }),
          });
          const aiData = await aiRes.json();
 
          if (!aiData.tasks?.length) {
-            setNlMessage(
-               'No tasks could be generated. Try being more specific.',
-            );
+            setNlMessage('No tasks generated. Try being more specific.');
             setNlLoading(false);
             return;
          }
 
-         // Step 2 — save each AI-generated task to the database
          const createdTasks: Task[] = [];
          for (const taskData of aiData.tasks) {
             const res = await fetch('/api/tasks', {
@@ -68,7 +63,7 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
             onTasksCreated(createdTasks);
             setInput('');
             setNlMessage(
-               `✅ Created ${createdTasks.length} task${createdTasks.length > 1 ? 's' : ''}`,
+               `Created ${createdTasks.length} task${createdTasks.length > 1 ? 's' : ''}`,
             );
          }
       } catch {
@@ -87,10 +82,7 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
          const res = await fetch('/api/ai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-               action: 'breakdown',
-               title: breakdownTitle,
-            }),
+            body: JSON.stringify({ action: 'breakdown', title: breakdownTitle }),
          });
          const data = await res.json();
          setBreakdownResult(data);
@@ -130,41 +122,43 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
    };
 
    return (
-      <div className='bg-dark-card border border-dark-border2 rounded-xl p-5'>
+      <div className='bg-dark-card border border-dark-border rounded-xl p-5'>
          {/* Header */}
          <div className='flex items-center gap-2 mb-4'>
-            <span className='text-xl'>🤖</span>
-            <h2 className='font-semibold text-purple-400'>AI Assistant</h2>
+            <Sparkles className='w-4 h-4 text-accent-purple' />
+            <h2 className='font-semibold text-content-primary text-sm'>
+               AI Assistant
+            </h2>
          </div>
 
          {/* Tabs */}
-         <div className='flex gap-2 mb-4'>
+         <div className='flex gap-1.5 mb-4'>
             {[
-               { id: 'natural', label: '💬 Natural Language' },
-               { id: 'breakdown', label: '🔧 Task Breakdown' },
+               { id: 'natural', label: 'Natural Language', icon: Sparkles },
+               { id: 'breakdown', label: 'Task Breakdown', icon: Wrench },
             ].map((tab) => (
                <button
                   key={tab.id}
                   onClick={() =>
                      setActiveTab(tab.id as 'natural' | 'breakdown')
                   }
-                  className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors ${
                      activeTab === tab.id
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-dark-card text-purple-600 border border-purple-200 hover:bg-purple-50'
+                        ? 'bg-accent-purple text-white'
+                        : 'bg-dark-hover text-content-secondary hover:text-content-primary'
                   }`}
                >
+                  <tab.icon className='w-3 h-3' />
                   {tab.label}
                </button>
             ))}
          </div>
 
-         {/* Natural Language Tab */}
          {activeTab === 'natural' && (
             <div className='space-y-3'>
-               <p className='text-sm text-purple-700'>
+               <p className='text-xs text-content-muted'>
                   Describe what you need to do and AI will create structured
-                  tasks for you.
+                  tasks.
                </p>
 
                <textarea
@@ -172,23 +166,23 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder='e.g. Plan a product launch including marketing, dev work and team coordination'
                   rows={3}
-                  className='w-full border border-purple-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-dark-card resize-none'
+                  className={`${inputClass} resize-none`}
                />
 
                <button
                   onClick={handleNaturalLanguage}
                   disabled={nlLoading || !input.trim()}
-                  className='w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-medium py-2 rounded-lg text-sm transition-colors'
+                  className='w-full bg-accent-purple hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg text-sm transition-colors'
                >
-                  {nlLoading ? '🤖 Creating tasks...' : '✨ Generate tasks'}
+                  {nlLoading ? 'Generating...' : '✦ Generate tasks'}
                </button>
 
                {nlMessage && (
                   <p
-                     className={`text-sm ${
-                        nlMessage.startsWith('✅')
-                           ? 'text-green-600'
-                           : 'text-red-500'
+                     className={`text-xs ${
+                        nlMessage.startsWith('Created')
+                           ? 'text-accent-green'
+                           : 'text-accent-red'
                      }`}
                   >
                      {nlMessage}
@@ -197,10 +191,9 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
             </div>
          )}
 
-         {/* Breakdown Tab */}
          {activeTab === 'breakdown' && (
             <div className='space-y-3'>
-               <p className='text-sm text-purple-700'>
+               <p className='text-xs text-content-muted'>
                   Enter a task and AI will break it into actionable subtasks.
                </p>
 
@@ -209,29 +202,26 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                   value={breakdownTitle}
                   onChange={(e) => setBreakdownTitle(e.target.value)}
                   placeholder='e.g. Build a login system with JWT authentication'
-                  className='w-full border border-purple-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-dark-card'
+                  className={inputClass}
                />
 
                <button
                   onClick={handleBreakdown}
                   disabled={breakdownLoading || !breakdownTitle.trim()}
-                  className='w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-medium py-2 rounded-lg text-sm transition-colors'
+                  className='w-full bg-accent-purple hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg text-sm transition-colors'
                >
-                  {breakdownLoading
-                     ? '🤖 Breaking down...'
-                     : '🔧 Break down task'}
+                  {breakdownLoading ? 'Breaking down...' : '✦ Break down task'}
                </button>
 
-               {/* Breakdown result */}
                {breakdownResult && (
-                  <div className='bg-dark-card border border-purple-200 rounded-lg p-4 space-y-3'>
+                  <div className='bg-dark-hover border border-dark-border rounded-lg p-4 space-y-3'>
                      <div className='flex items-center justify-between'>
-                        <p className='text-sm font-medium text-content-primary'>
-                           Suggested subtasks:
+                        <p className='text-xs font-medium text-content-secondary'>
+                           Suggested subtasks
                         </p>
                         {breakdownResult.estimated_minutes && (
-                           <span className='text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full'>
-                              ⏱ ~{breakdownResult.estimated_minutes} min
+                           <span className='text-xs text-content-muted tabular-nums'>
+                              ~{breakdownResult.estimated_minutes} min
                            </span>
                         )}
                      </div>
@@ -245,9 +235,9 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                            }) => (
                               <li
                                  key={s.id}
-                                 className='flex items-center gap-2 text-sm text-content-secondary'
+                                 className='flex items-center gap-2 text-sm text-content-primary'
                               >
-                                 <span className='text-purple-400'>•</span>
+                                 <span className='w-1 h-1 rounded-full bg-accent-purple flex-shrink-0' />
                                  {s.title}
                               </li>
                            ),
@@ -263,11 +253,9 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                      <button
                         onClick={handleCreateFromBreakdown}
                         disabled={createLoading}
-                        className='w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium py-2 rounded-lg text-sm transition-colors'
+                        className='w-full bg-accent-green hover:bg-green-600 disabled:opacity-40 text-dark-page font-medium py-2 rounded-lg text-sm transition-colors'
                      >
-                        {createLoading
-                           ? 'Creating...'
-                           : '✅ Create task with these subtasks'}
+                        {createLoading ? 'Creating...' : 'Create task with subtasks'}
                      </button>
                   </div>
                )}

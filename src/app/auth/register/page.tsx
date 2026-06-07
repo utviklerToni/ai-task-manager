@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
+import { CheckSquare } from 'lucide-react';
 
 export default function RegisterPage() {
    const router = useRouter();
@@ -54,13 +55,17 @@ export default function RegisterPage() {
 
    return (
       <div className='min-h-screen bg-dark-page flex items-center justify-center p-4'>
-         <div className='bg-dark-card rounded-2xl shadow-sm border border-dark-border w-full max-w-md p-8'>
-            <div className='text-center mb-8'>
-               <div className='text-3xl mb-2'>✅</div>
-               <h1 className='text-2xl font-bold text-content-primary'>
+         <div className='bg-dark-card border border-dark-border rounded-xl w-full max-w-md p-8'>
+
+            {/* Logo */}
+            <div className='flex flex-col items-center mb-8'>
+               <div className='w-11 h-11 rounded-xl bg-dark-hover border border-dark-border flex items-center justify-center mb-4'>
+                  <CheckSquare className='w-5 h-5 text-accent-blue' />
+               </div>
+               <h1 className='text-xl font-semibold text-content-primary'>
                   Create account
                </h1>
-               <p className='text-content-muted mt-1 text-sm'>
+               <p className='text-content-muted text-sm mt-1'>
                   Start managing tasks with AI
                </p>
             </div>
@@ -69,7 +74,7 @@ export default function RegisterPage() {
                <div>
                   <label
                      htmlFor='name'
-                     className='block text-sm font-medium text-content-primary mb-1'
+                     className='block text-sm text-content-secondary mb-1.5'
                   >
                      Name
                   </label>
@@ -80,14 +85,14 @@ export default function RegisterPage() {
                      onChange={(e) => setName(e.target.value)}
                      placeholder='Your name'
                      required
-                     className='w-full px-4 py-2.5 bg-dark-card text-content-primary border border-dark-border rounded-lg text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className='w-full px-3 py-2.5 bg-dark-hover text-content-primary border border-dark-border rounded-lg text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-colors'
                   />
                </div>
 
                <div>
                   <label
                      htmlFor='email'
-                     className='block text-sm font-medium text-content-primary mb-1'
+                     className='block text-sm text-content-secondary mb-1.5'
                   >
                      Email
                   </label>
@@ -98,14 +103,14 @@ export default function RegisterPage() {
                      onChange={(e) => setEmail(e.target.value)}
                      placeholder='you@example.com'
                      required
-                     className='w-full px-4 py-2.5 bg-dark-card text-content-primary border border-dark-border rounded-lg text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className='w-full px-3 py-2.5 bg-dark-hover text-content-primary border border-dark-border rounded-lg text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-colors'
                   />
                </div>
 
                <div>
                   <label
                      htmlFor='password'
-                     className='block text-sm font-medium text-content-primary mb-1'
+                     className='block text-sm text-content-secondary mb-1.5'
                   >
                      Password
                   </label>
@@ -116,12 +121,12 @@ export default function RegisterPage() {
                      onChange={(e) => setPassword(e.target.value)}
                      placeholder='Min 6 characters'
                      required
-                     className='w-full px-4 py-2.5 bg-dark-card text-content-primary border border-dark-border rounded-lg text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className='w-full px-3 py-2.5 bg-dark-hover text-content-primary border border-dark-border rounded-lg text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent transition-colors'
                   />
                </div>
 
                {error && (
-                  <div className='bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg'>
+                  <div className='bg-red-950 border border-red-900 text-red-400 text-sm px-4 py-3 rounded-lg'>
                      {error}
                   </div>
                )}
@@ -129,7 +134,7 @@ export default function RegisterPage() {
                <button
                   type='submit'
                   disabled={loading}
-                  className='w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2.5 px-4 rounded-lg transition-colors text-sm'
+                  className='w-full bg-accent-blue hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2.5 px-4 rounded-lg transition-colors text-sm mt-1'
                >
                   {loading ? 'Creating account...' : 'Create account'}
                </button>
@@ -139,7 +144,7 @@ export default function RegisterPage() {
                Already have an account?{' '}
                <Link
                   href='/auth/login'
-                  className='text-blue-600 hover:underline font-medium'
+                  className='text-accent-blue hover:underline font-medium'
                >
                   Sign in
                </Link>
