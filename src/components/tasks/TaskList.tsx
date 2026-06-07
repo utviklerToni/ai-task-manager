@@ -1,6 +1,6 @@
 'use client';
 
-import { Task, TaskFilters, TaskStatus } from '@/types';
+import { Task, TaskFilters, TaskPriority, TaskStatus } from '@/types';
 import { useMemo, useState } from 'react';
 import TaskForm from './TaskForm';
 import TaskCard from './TaskCard';
@@ -188,7 +188,10 @@ export default function TaskList({ initialTasks }: TaskListProps) {
             <select
                value={filters.status}
                onChange={(e) =>
-                  setFilters((f) => ({ ...f, status: e.target.value as any }))
+                  setFilters((f) => ({
+                     ...f,
+                     status: e.target.value as TaskStatus | 'all',
+                  }))
                }
                className='border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
@@ -203,7 +206,7 @@ export default function TaskList({ initialTasks }: TaskListProps) {
                onChange={(e) =>
                   setFilters((f) => ({
                      ...f,
-                     priority: e.target.value as any,
+                     priority: e.target.value as TaskPriority | 'all',
                   }))
                }
                className='border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'

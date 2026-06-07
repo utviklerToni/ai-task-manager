@@ -18,7 +18,11 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
    // Breakdown state
    const [breakdownTitle, setBreakdownTitle] = useState('');
    const [breakdownLoading, setBreakdownLoading] = useState(false);
-   const [breakdownResult, setBreakdownResult] = useState<any>(null);
+   const [breakdownResult, setBreakdownResult] = useState<{
+      subtasks: Array<{ id: string; title: string; completed: boolean }>;
+      estimated_minutes?: number;
+      message?: string;
+   } | null>(null);
    const [createLoading, setCreateLoading] = useState(false);
 
    const handleNaturalLanguage = async () => {
@@ -229,15 +233,21 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                      </div>
 
                      <ul className='space-y-1.5'>
-                        {breakdownResult.subtasks?.map((s: any) => (
-                           <li
-                              key={s.id}
-                              className='flex items-center gap-2 text-sm text-gray-600'
-                           >
-                              <span className='text-purple-400'>•</span>
-                              {s.title}
-                           </li>
-                        ))}
+                        {breakdownResult.subtasks?.map(
+                           (s: {
+                              id: string;
+                              title: string;
+                              completed: boolean;
+                           }) => (
+                              <li
+                                 key={s.id}
+                                 className='flex items-center gap-2 text-sm text-gray-600'
+                              >
+                                 <span className='text-purple-400'>•</span>
+                                 {s.title}
+                              </li>
+                           ),
+                        )}
                      </ul>
 
                      {breakdownResult.message && (
