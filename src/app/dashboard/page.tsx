@@ -17,16 +17,7 @@ async function getTasks(userId: string): Promise<Task[]> {
 export default async function DashboardPage() {
    const session = await auth();
    const tasks = await getTasks(session!.user!.id as string);
+   const userName = session?.user?.name || session?.user?.email || '';
 
-   return (
-      <div>
-         <div className='mb-6'>
-            <h1 className='text-2xl font-bold text-content-primary'>My Tasks</h1>
-            <p className='text-content-muted text-sm mt-1'>
-               Manage and track your tasks with AI assistance
-            </p>
-         </div>
-         <TaskList initialTasks={tasks} />
-      </div>
-   );
+   return <TaskList initialTasks={tasks} userName={userName} />;
 }

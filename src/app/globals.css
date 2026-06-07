@@ -33,6 +33,25 @@ option {
    color: #ededed;
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555555;
+}
+
 ::selection {
    background-color: #3b82f6;
    color: #ffffff;

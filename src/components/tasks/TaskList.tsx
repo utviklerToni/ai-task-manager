@@ -5,12 +5,24 @@ import { useMemo, useState } from 'react';
 import TaskForm from './TaskForm';
 import TaskCard from './TaskCard';
 import AiAssistant from '../ai/AiAssistant';
+import RandomQuote from '../ui/RandomQuote';
+
+const STATUS_TABS: {
+   key: TaskStatus;
+   label: string;
+   dot: string;
+}[] = [
+   { key: 'in-progress', label: 'In Progress', dot: 'bg-accent-amber' },
+   { key: 'todo', label: 'To Do', dot: 'bg-accent-blue' },
+   { key: 'done', label: 'Done', dot: 'bg-accent-green' },
+];
 
 interface TaskListProps {
    initialTasks: Task[];
+   userName?: string;
 }
 
-export default function TaskList({ initialTasks }: TaskListProps) {
+export default function TaskList({ initialTasks, userName }: TaskListProps) {
    const [tasks, setTasks] = useState<Task[]>(initialTasks);
    const [filters, setFilters] = useState<TaskFilters>({
       status: 'all',
@@ -21,8 +33,13 @@ export default function TaskList({ initialTasks }: TaskListProps) {
    const [showForm, setShowForm] = useState(false);
    const [editTask, setEditTask] = useState<Task | null>(null);
    const [showAi, setShowAi] = useState(false);
+   const [tabIndex, setTabIndex] = useState(0);
 
-   // Stats — derived from live task state
+   const firstName =
+      userName?.split(' ')[0] || userName?.split('@')[0] || 'there';
+
+   const currentTab = STATUS_TABS[tabIndex];
+
    const stats = useMemo(
       () => ({
          total: tasks.length,
@@ -33,7 +50,11 @@ export default function TaskList({ initialTasks }: TaskListProps) {
       [tasks],
    );
 
-   // Filtered tasks — derived from tasks + filters
+   const carouselTasks = useMemo(
+      () => tasks.filter((t) => t.status === currentTab.key),
+      [tasks, currentTab],
+   );
+
    const filtered = useMemo(() => {
       return tasks.filter((t) => {
          if (filters.status !== 'all' && t.status !== filters.status)
@@ -51,7 +72,6 @@ export default function TaskList({ initialTasks }: TaskListProps) {
       });
    }, [tasks, filters]);
 
-   // Categories derived from actual task data
    const categories = useMemo(
       () => ['all', ...Array.from(new Set(tasks.map((t) => t.category)))],
       [tasks],
@@ -99,68 +119,190 @@ export default function TaskList({ initialTasks }: TaskListProps) {
 
    return (
       <div>
-         {/* Stats */}
-         <div className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-6'>
-            {[
-               {
-                  label: 'Total',
-                  value: stats.total,
-                  color: 'bg-dark-hover text-content-primary',
-               },
-               {
-                  label: 'To Do',
-                  value: stats.todo,
-                  color: 'bg-blue-50 text-blue-700',
-               },
-               {
-                  label: 'In Progress',
-                  value: stats.inProgress,
-                  color: 'bg-yellow-50 text-yellow-700',
-               },
-               {
-                  label: 'Done',
-                  value: stats.done,
-                  color: 'bg-green-50 text-green-700',
-               },
-            ].map((stat) => (
-               <div key={stat.label} className={`${stat.color} rounded-xl p-4`}>
-                  <p className='text-2xl font-bold'>{stat.value}</p>
-                  <p className='text-sm font-medium mt-0.5'>{stat.label}</p>
+         {/* ── Hero ── */}
+         <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
+            {/* Left — welcome + quote + actions */}
+            <div className='flex flex-col justify-between min-h-[220px]'>
+               <div>
+                  <p className='text-xs text-content-muted uppercase tracking-widest mb-4'>
+                     AI Task Manager
+                  </p>
+                  <h1 className='text-3xl font-bold text-content-primary leading-snug mb-4'>
+                     Welcome back,
+                     <br />
+                     {firstName}.
+                  </h1>
+                  <RandomQuote />
                </div>
-            ))}
+
+               {/* Inline stats */}
+               <div className='flex gap-8 mt-6 mb-6'>
+                  <div>
+                     <p className='text-2xl font-bold text-content-primary'>
+                        {stats.total}
+                     </p>
+                     <p className='text-xs text-content-muted mt-0.5'>Total</p>
+                  </div>
+                  <div>
+                     <p className='text-2xl font-bold text-accent-amber'>
+                        {stats.inProgress}
+                     </p>
+                     <p className='text-xs text-content-muted mt-0.5'>
+                        In Progress
+                     </p>
+                  </div>
+                  <div>
+                     <p className='text-2xl font-bold text-accent-green'>
+                        {stats.done}
+                     </p>
+                     <p className='text-xs text-content-muted mt-0.5'>Done</p>
+                  </div>
+                  <div>
+                     <p className='text-2xl font-bold text-accent-blue'>
+                        {stats.todo}
+                     </p>
+                     <p className='text-xs text-content-muted mt-0.5'>To Do</p>
+                  </div>
+               </div>
+
+               {/* Action buttons */}
+               <div className='flex gap-3'>
+                  <button
+                     onClick={() => {
+                        setShowForm(true);
+                        setEditTask(null);
+                        setShowAi(false);
+                     }}
+                     className='bg-content-primary hover:bg-white text-dark-page text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors'
+                  >
+                     + New Task
+                  </button>
+                  <button
+                     onClick={() => {
+                        setShowAi(!showAi);
+                        setShowForm(false);
+                        setEditTask(null);
+                     }}
+                     className='bg-dark-card hover:bg-dark-hover border border-dark-border text-content-primary text-sm font-medium px-5 py-2.5 rounded-lg transition-colors'
+                  >
+                     🤖 AI Assistant
+                  </button>
+               </div>
+            </div>
+
+            {/* Right — status carousel */}
+            <div className='bg-dark-card border border-dark-border rounded-xl overflow-hidden flex flex-col'>
+               {/* Carousel header */}
+               <div className='flex items-center justify-between px-5 py-3.5 border-b border-dark-border'>
+                  <div className='flex gap-1'>
+                     {STATUS_TABS.map((tab, i) => (
+                        <button
+                           key={tab.key}
+                           onClick={() => setTabIndex(i)}
+                           className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
+                              i === tabIndex
+                                 ? 'bg-dark-hover text-content-primary'
+                                 : 'text-content-muted hover:text-content-secondary'
+                           }`}
+                        >
+                           {tab.label}
+                           <span className='ml-1.5 tabular-nums opacity-50'>
+                              {tasks.filter((t) => t.status === tab.key).length}
+                           </span>
+                        </button>
+                     ))}
+                  </div>
+
+                  {/* Arrow nav */}
+                  <div className='flex gap-1'>
+                     <button
+                        onClick={() =>
+                           setTabIndex(
+                              (i) =>
+                                 (i - 1 + STATUS_TABS.length) %
+                                 STATUS_TABS.length,
+                           )
+                        }
+                        className='w-7 h-7 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-dark-hover transition-colors'
+                     >
+                        ←
+                     </button>
+                     <button
+                        onClick={() =>
+                           setTabIndex((i) => (i + 1) % STATUS_TABS.length)
+                        }
+                        className='w-7 h-7 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-dark-hover transition-colors'
+                     >
+                        →
+                     </button>
+                  </div>
+               </div>
+
+               {/* Task rows */}
+               <div className='max-h-64 overflow-y-auto divide-y divide-dark-border'>
+                  {carouselTasks.length === 0 ? (
+                     <div className='flex items-center justify-center py-12'>
+                        <p className='text-content-muted text-sm'>
+                           No {currentTab.label.toLowerCase()} tasks
+                        </p>
+                     </div>
+                  ) : (
+                     carouselTasks.map((task) => (
+                        <div
+                           key={task.id}
+                           className='px-5 py-3 flex items-center gap-3 hover:bg-dark-hover transition-colors group cursor-default'
+                        >
+                           <span
+                              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${currentTab.dot}`}
+                           />
+                           <span className='text-sm text-content-primary flex-1 truncate'>
+                              {task.title}
+                           </span>
+                           <div className='flex items-center gap-2 flex-shrink-0'>
+                              {task.estimated_minutes && (
+                                 <span className='text-xs text-content-muted tabular-nums'>
+                                    {task.estimated_minutes}m
+                                 </span>
+                              )}
+                              <span
+                                 className={`text-xs font-medium ${
+                                    task.priority === 'high'
+                                       ? 'text-accent-red'
+                                       : task.priority === 'medium'
+                                         ? 'text-accent-amber'
+                                         : 'text-accent-green'
+                                 }`}
+                              >
+                                 {task.priority}
+                              </span>
+                           </div>
+                        </div>
+                     ))
+                  )}
+               </div>
+
+               {/* Footer count */}
+               <div className='px-5 py-3 border-t border-dark-border'>
+                  <p className='text-xs text-content-muted'>
+                     {carouselTasks.length}{' '}
+                     {carouselTasks.length === 1 ? 'task' : 'tasks'} ·{' '}
+                     {currentTab.label}
+                  </p>
+               </div>
+            </div>
          </div>
 
-         {/* Action buttons */}
-         <div className='flex flex-wrap gap-3 mb-4'>
-            <button
-               onClick={() => {
-                  setShowForm(true);
-                  setEditTask(null);
-                  setShowAi(false);
-               }}
-               className='bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors'
-            >
-               + New Task
-            </button>
-            <button
-               onClick={() => {
-                  setShowAi(!showAi);
-                  setShowForm(false);
-                  setEditTask(null);
-               }}
-               className='bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors'
-            >
-               🤖 AI Assistant
-            </button>
-         </div>
+         {/* ── Divider ── */}
+         <div className='border-t border-dark-border mb-6' />
 
+         {/* AI assistant panel */}
          {showAi && (
             <div className='mb-4'>
                <AiAssistant onTasksCreated={handleAiTasksCreated} />
             </div>
          )}
 
-         {/* Task form  */}
+         {/* Task form */}
          {(showForm || editTask) && (
             <div className='mb-4'>
                <TaskForm
@@ -178,7 +320,7 @@ export default function TaskList({ initialTasks }: TaskListProps) {
             </div>
          )}
 
-         {/* Filters */}
+         {/* ── Filters ── */}
          <div className='bg-dark-card border border-dark-border rounded-xl p-4 mb-4 flex flex-wrap gap-3'>
             <input
                type='text'
@@ -238,7 +380,7 @@ export default function TaskList({ initialTasks }: TaskListProps) {
          </div>
 
          {/* Results count */}
-         <p className='text-sm text-content-muted mb-3'>
+         <p className='text-xs text-content-muted mb-3'>
             Showing {filtered.length} of {tasks.length} tasks
          </p>
 
@@ -246,7 +388,9 @@ export default function TaskList({ initialTasks }: TaskListProps) {
          {filtered.length === 0 && (
             <div className='text-center py-16 bg-dark-card rounded-xl border border-dark-border'>
                <p className='text-4xl mb-3'>📋</p>
-               <p className='font-medium text-content-primary'>No tasks found</p>
+               <p className='font-medium text-content-primary'>
+                  No tasks found
+               </p>
                <p className='text-sm text-content-muted mt-1'>
                   {tasks.length === 0
                      ? 'Create your first task to get started'

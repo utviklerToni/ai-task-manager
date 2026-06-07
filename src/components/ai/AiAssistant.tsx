@@ -130,11 +130,11 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
    };
 
    return (
-      <div className='bg-purple-50 border border-purple-200 rounded-xl p-5'>
+      <div className='bg-dark-card border border-dark-border2 rounded-xl p-5'>
          {/* Header */}
          <div className='flex items-center gap-2 mb-4'>
             <span className='text-xl'>🤖</span>
-            <h2 className='font-semibold text-purple-900'>AI Assistant</h2>
+            <h2 className='font-semibold text-purple-400'>AI Assistant</h2>
          </div>
 
          {/* Tabs */}
