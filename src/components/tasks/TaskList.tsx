@@ -136,13 +136,18 @@ export default function TaskList({ initialTasks }: TaskListProps) {
                onClick={() => {
                   setShowForm(true);
                   setEditTask(null);
+                  setShowAi(false);
                }}
                className='bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors'
             >
                + New Task
             </button>
             <button
-               onClick={() => setShowAi(!showAi)}
+               onClick={() => {
+                  setShowAi(!showAi);
+                  setShowForm(false);
+                  setEditTask(null);
+               }}
                className='bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors'
             >
                🤖 AI Assistant
