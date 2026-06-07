@@ -10,8 +10,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: { label: 'Email', type: 'email' },
             password: { label: 'Password', type: 'password' },
          },
-
-         // authorize() is called with email and password
          async authorize(credentials) {
             if (!credentials?.email || !credentials?.password) return null;
 
@@ -35,8 +33,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
          },
       }),
    ],
-
-   // embeds the user ID into the JWT token
    callbacks: {
       async jwt({ token, user }) {
          if (user) {
@@ -44,16 +40,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.email = user.email;
             token.name = user.name;
          }
-
          return token;
+      },
+      async session({ session, token }) {
+         if (token && session.user) {
+            session.user.id = token.id as string;
+            session.user.email = token.email as string;
+            session.user.name = token.name as string;
+         }
+         return session;
       },
    },
    pages: {
       signIn: '/auth/login',
       error: '/auth/login',
    },
-
-   // session() callback makes user.id available anywhere we call auth()
    session: { strategy: 'jwt' },
    secret: process.env.NEXTAUTH_SECRET,
 });

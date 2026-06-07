@@ -1,10 +1,13 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { AiResponse, TaskPriority } from '@/types';
 
-const client = new Anthropic({ apiKey: process.env.ANHTROPIC_API_KEY });
+const client = new Anthropic({
+   apiKey: process.env.ANTHROPIC_API_KEY,
+});
 
 const MODEL = 'claude-sonnet-4-5';
 
+// Break down a natural language task description into subtasks
 export async function breakdownTask(
    title: string,
    description?: string,
@@ -43,6 +46,7 @@ Generate 3-6 specific, actionable subtasks. Be concise.`;
    }
 }
 
+// Suggest priority based on task title and description
 export async function suggestPriority(
    title: string,
    description?: string,
@@ -71,7 +75,7 @@ Priority must be exactly one of: "low", "medium", "high"`;
       response.content[0].type === 'text' ? response.content[0].text : '';
 
    try {
-      const clean = text.replace(/```json|```g/, '').trim();
+      const clean = text.replace(/```json|```/g, '').trim();
       return JSON.parse(clean);
    } catch {
       return {
@@ -81,7 +85,8 @@ Priority must be exactly one of: "low", "medium", "high"`;
    }
 }
 
-export async function createTaskFromNaturalLanguage(
+// Create tasks from natural language
+export async function createTasksFromNaturalLanguage(
    input: string,
 ): Promise<AiResponse> {
    const prompt = `You are a productivity assistant. Convert this natural language input into structured tasks.
