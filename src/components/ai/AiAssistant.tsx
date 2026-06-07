@@ -151,7 +151,7 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                   className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${
                      activeTab === tab.id
                         ? 'bg-purple-600 text-white'
-                        : 'bg-white text-purple-600 border border-purple-200 hover:bg-purple-50'
+                        : 'bg-dark-card text-purple-600 border border-purple-200 hover:bg-purple-50'
                   }`}
                >
                   {tab.label}
@@ -172,7 +172,7 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder='e.g. Plan a product launch including marketing, dev work and team coordination'
                   rows={3}
-                  className='w-full border border-purple-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white resize-none'
+                  className='w-full border border-purple-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-dark-card resize-none'
                />
 
                <button
@@ -209,7 +209,7 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                   value={breakdownTitle}
                   onChange={(e) => setBreakdownTitle(e.target.value)}
                   placeholder='e.g. Build a login system with JWT authentication'
-                  className='w-full border border-purple-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white'
+                  className='w-full border border-purple-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-dark-card'
                />
 
                <button
@@ -224,9 +224,9 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
 
                {/* Breakdown result */}
                {breakdownResult && (
-                  <div className='bg-white border border-purple-200 rounded-lg p-4 space-y-3'>
+                  <div className='bg-dark-card border border-purple-200 rounded-lg p-4 space-y-3'>
                      <div className='flex items-center justify-between'>
-                        <p className='text-sm font-medium text-gray-700'>
+                        <p className='text-sm font-medium text-content-primary'>
                            Suggested subtasks:
                         </p>
                         {breakdownResult.estimated_minutes && (
@@ -245,7 +245,7 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                            }) => (
                               <li
                                  key={s.id}
-                                 className='flex items-center gap-2 text-sm text-gray-600'
+                                 className='flex items-center gap-2 text-sm text-content-secondary'
                               >
                                  <span className='text-purple-400'>•</span>
                                  {s.title}
@@ -255,7 +255,7 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                      </ul>
 
                      {breakdownResult.message && (
-                        <p className='text-xs text-gray-500 italic'>
+                        <p className='text-xs text-content-muted italic'>
                            {breakdownResult.message}
                         </p>
                      )}

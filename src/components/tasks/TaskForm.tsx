@@ -68,15 +68,15 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
    };
 
    return (
-      <div className='bg-white border border-gray-200 rounded-xl p-5'>
-         <h2 className='font-semibold text-gray-900 mb-4'>
+      <div className='bg-dark-card border border-dark-border rounded-xl p-5'>
+         <h2 className='font-semibold text-content-primary mb-4'>
             {task ? 'Edit task' : 'New task'}
          </h2>
 
          <form onSubmit={handleSubmit} className='space-y-3'>
             {/* Title */}
             <div>
-               <label className='block text-sm font-medium text-gray-700 mb-1'>
+               <label className='block text-sm font-medium text-content-primary mb-1'>
                   Title <span className='text-red-400'>*</span>
                </label>
                <input
@@ -85,13 +85,13 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder='What needs to be done?'
                   required
-                  className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                  className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
                />
             </div>
 
             {/* Description */}
             <div>
-               <label className='block text-sm font-medium text-gray-700 mb-1'>
+               <label className='block text-sm font-medium text-content-primary mb-1'>
                   Description
                </label>
                <textarea
@@ -99,14 +99,14 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder='Optional details...'
                   rows={2}
-                  className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
+                  className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
                />
             </div>
 
             {/* Priority + Status + Category */}
             <div className='grid grid-cols-3 gap-3'>
                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  <label className='block text-sm font-medium text-content-primary mb-1'>
                      Priority
                   </label>
                   <select
@@ -114,7 +114,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                      onChange={(e) =>
                         setPriority(e.target.value as TaskPriority)
                      }
-                     className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
                   >
                      <option value='low'>Low</option>
                      <option value='medium'>Medium</option>
@@ -123,13 +123,13 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                </div>
 
                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  <label className='block text-sm font-medium text-content-primary mb-1'>
                      Status
                   </label>
                   <select
                      value={status}
                      onChange={(e) => setStatus(e.target.value as TaskStatus)}
-                     className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
                   >
                      <option value='todo'>To Do</option>
                      <option value='in-progress'>In Progress</option>
@@ -138,13 +138,13 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                </div>
 
                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  <label className='block text-sm font-medium text-content-primary mb-1'>
                      Category
                   </label>
                   <select
                      value={category}
                      onChange={(e) => setCategory(e.target.value)}
-                     className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
                   >
                      <option value='general'>General</option>
                      <option value='work'>Work</option>
@@ -157,7 +157,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
 
             {/* Estimated minutes */}
             <div>
-               <label className='block text-sm font-medium text-gray-700 mb-1'>
+               <label className='block text-sm font-medium text-content-primary mb-1'>
                   Estimated minutes
                </label>
                <input
@@ -166,7 +166,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   onChange={(e) => setEstimatedMinutes(e.target.value)}
                   placeholder='e.g. 30'
                   min={0}
-                  className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                  className='w-full bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-2 text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
                />
             </div>
 
@@ -198,7 +198,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                <button
                   type='button'
                   onClick={onCancel}
-                  className='flex-1 border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium py-2 rounded-lg text-sm transition-colors'
+                  className='flex-1 border border-dark-border hover:bg-dark-hover text-content-secondary font-medium py-2 rounded-lg text-sm transition-colors'
                >
                   Cancel
                </button>

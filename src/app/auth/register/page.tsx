@@ -53,14 +53,14 @@ export default function RegisterPage() {
    };
 
    return (
-      <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>
-         <div className='bg-white rounded-2xl shadow-sm border border-gray-200 w-full max-w-md p-8'>
+      <div className='min-h-screen bg-dark-page flex items-center justify-center p-4'>
+         <div className='bg-dark-card rounded-2xl shadow-sm border border-dark-border w-full max-w-md p-8'>
             <div className='text-center mb-8'>
                <div className='text-3xl mb-2'>✅</div>
-               <h1 className='text-2xl font-bold text-gray-900'>
+               <h1 className='text-2xl font-bold text-content-primary'>
                   Create account
                </h1>
-               <p className='text-gray-500 mt-1 text-sm'>
+               <p className='text-content-muted mt-1 text-sm'>
                   Start managing tasks with AI
                </p>
             </div>
@@ -69,7 +69,7 @@ export default function RegisterPage() {
                <div>
                   <label
                      htmlFor='name'
-                     className='block text-sm font-medium text-gray-700 mb-1'
+                     className='block text-sm font-medium text-content-primary mb-1'
                   >
                      Name
                   </label>
@@ -80,14 +80,14 @@ export default function RegisterPage() {
                      onChange={(e) => setName(e.target.value)}
                      placeholder='Your name'
                      required
-                     className='w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className='w-full px-4 py-2.5 bg-dark-card text-content-primary border border-dark-border rounded-lg text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
                   />
                </div>
 
                <div>
                   <label
                      htmlFor='email'
-                     className='block text-sm font-medium text-gray-700 mb-1'
+                     className='block text-sm font-medium text-content-primary mb-1'
                   >
                      Email
                   </label>
@@ -98,14 +98,14 @@ export default function RegisterPage() {
                      onChange={(e) => setEmail(e.target.value)}
                      placeholder='you@example.com'
                      required
-                     className='w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className='w-full px-4 py-2.5 bg-dark-card text-content-primary border border-dark-border rounded-lg text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
                   />
                </div>
 
                <div>
                   <label
                      htmlFor='password'
-                     className='block text-sm font-medium text-gray-700 mb-1'
+                     className='block text-sm font-medium text-content-primary mb-1'
                   >
                      Password
                   </label>
@@ -116,7 +116,7 @@ export default function RegisterPage() {
                      onChange={(e) => setPassword(e.target.value)}
                      placeholder='Min 6 characters'
                      required
-                     className='w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                     className='w-full px-4 py-2.5 bg-dark-card text-content-primary border border-dark-border rounded-lg text-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
                   />
                </div>
 
@@ -135,7 +135,7 @@ export default function RegisterPage() {
                </button>
             </form>
 
-            <p className='text-center text-sm text-gray-500 mt-6'>
+            <p className='text-center text-sm text-content-muted mt-6'>
                Already have an account?{' '}
                <Link
                   href='/auth/login'

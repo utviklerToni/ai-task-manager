@@ -7,15 +7,15 @@ export default async function HomePage() {
    if (session) redirect('/dashboard');
 
    return (
-      <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
+      <div className='min-h-screen bg-dark-page flex items-center justify-center p-4'>
          <div className='text-center max-w-2xl'>
             <div className='text-6xl mb-6'>✅</div>
 
-            <h1 className='text-4xl font-bold text-gray-900 mb-4'>
+            <h1 className='text-4xl font-bold text-content-primary mb-4'>
                AI Task Manager
             </h1>
 
-            <p className='text-lg text-gray-600 mb-8'>
+            <p className='text-lg text-content-secondary mb-8'>
                Manage your tasks smarter with AI-powered breakdowns, priority
                suggestions, and natural language task creation.
             </p>
@@ -29,7 +29,7 @@ export default async function HomePage() {
                </Link>
                <Link
                   href='/auth/login'
-                  className='bg-white hover:bg-gray-50 text-gray-700 font-medium px-6 py-3 rounded-lg border border-gray-200 transition-colors'
+                  className='bg-dark-card hover:bg-dark-hover text-content-primary font-medium px-6 py-3 rounded-lg border border-dark-border transition-colors'
                >
                   Sign in
                </Link>
@@ -55,13 +55,13 @@ export default async function HomePage() {
                ].map((feature) => (
                   <div
                      key={feature.title}
-                     className='bg-white rounded-xl p-5 border border-gray-200'
+                     className='bg-dark-card rounded-xl p-5 border border-dark-border'
                   >
                      <div className='text-2xl mb-2'>{feature.icon}</div>
-                     <h3 className='font-semibold text-gray-900 mb-1'>
+                     <h3 className='font-semibold text-content-primary mb-1'>
                         {feature.title}
                      </h3>
-                     <p className='text-sm text-gray-500'>{feature.desc}</p>
+                     <p className='text-sm text-content-muted'>{feature.desc}</p>
                   </div>
                ))}
             </div>

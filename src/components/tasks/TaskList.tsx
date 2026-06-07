@@ -105,7 +105,7 @@ export default function TaskList({ initialTasks }: TaskListProps) {
                {
                   label: 'Total',
                   value: stats.total,
-                  color: 'bg-gray-100 text-gray-700',
+                  color: 'bg-dark-hover text-content-primary',
                },
                {
                   label: 'To Do',
@@ -179,7 +179,7 @@ export default function TaskList({ initialTasks }: TaskListProps) {
          )}
 
          {/* Filters */}
-         <div className='bg-white border border-gray-200 rounded-xl p-4 mb-4 flex flex-wrap gap-3'>
+         <div className='bg-dark-card border border-dark-border rounded-xl p-4 mb-4 flex flex-wrap gap-3'>
             <input
                type='text'
                placeholder='Search tasks...'
@@ -187,7 +187,7 @@ export default function TaskList({ initialTasks }: TaskListProps) {
                onChange={(e) =>
                   setFilters((f) => ({ ...f, search: e.target.value }))
                }
-               className='border border-gray-200 rounded-lg px-3 py-1.5 text-sm flex-1 min-w-[160px] focus:outline-none focus:ring-2 focus:ring-blue-500'
+               className='bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm flex-1 min-w-[160px] placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
 
             <select
@@ -198,7 +198,7 @@ export default function TaskList({ initialTasks }: TaskListProps) {
                      status: e.target.value as TaskStatus | 'all',
                   }))
                }
-               className='border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+               className='bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
                <option value='all'>All status</option>
                <option value='todo'>To Do</option>
@@ -214,7 +214,7 @@ export default function TaskList({ initialTasks }: TaskListProps) {
                      priority: e.target.value as TaskPriority | 'all',
                   }))
                }
-               className='border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+               className='bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
                <option value='all'>All priorities</option>
                <option value='high'>High</option>
@@ -227,7 +227,7 @@ export default function TaskList({ initialTasks }: TaskListProps) {
                onChange={(e) =>
                   setFilters((f) => ({ ...f, category: e.target.value }))
                }
-               className='border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+               className='bg-dark-card text-content-primary border border-dark-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
                {categories.map((c) => (
                   <option key={c} value={c}>
@@ -238,16 +238,16 @@ export default function TaskList({ initialTasks }: TaskListProps) {
          </div>
 
          {/* Results count */}
-         <p className='text-sm text-gray-500 mb-3'>
+         <p className='text-sm text-content-muted mb-3'>
             Showing {filtered.length} of {tasks.length} tasks
          </p>
 
          {/* Empty state */}
          {filtered.length === 0 && (
-            <div className='text-center py-16 bg-white rounded-xl border border-gray-200'>
+            <div className='text-center py-16 bg-dark-card rounded-xl border border-dark-border'>
                <p className='text-4xl mb-3'>📋</p>
-               <p className='font-medium text-gray-700'>No tasks found</p>
-               <p className='text-sm text-gray-400 mt-1'>
+               <p className='font-medium text-content-primary'>No tasks found</p>
+               <p className='text-sm text-content-muted mt-1'>
                   {tasks.length === 0
                      ? 'Create your first task to get started'
                      : 'Try adjusting your filters'}

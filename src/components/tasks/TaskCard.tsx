@@ -17,7 +17,7 @@ const priorityStyles = {
 };
 
 const statusStyles = {
-   todo: 'bg-gray-100 text-gray-600',
+   todo: 'bg-dark-hover text-content-secondary',
    'in-progress': 'bg-blue-100 text-blue-700',
    done: 'bg-green-100 text-green-700',
 };
@@ -48,7 +48,7 @@ export default function TaskCard({
 
    return (
       <div
-         className={`bg-white border rounded-xl p-4 transition-all ${task.status === 'done' ? 'opacity-60' : ''}`}
+         className={`bg-dark-card border border-dark-border rounded-xl p-4 transition-all ${task.status === 'done' ? 'opacity-60' : ''}`}
       >
          <div className='flex items-start gap-3'>
             <button
@@ -58,7 +58,7 @@ export default function TaskCard({
                      task.status === 'done' ? 'todo' : 'done',
                   )
                }
-               className={`mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${task.status === 'done' ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 hover:border-green-400'}`}
+               className={`mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${task.status === 'done' ? 'bg-green-500 border-green-500 text-white' : 'border-dark-border hover:border-green-400'}`}
                aria-label={
                   task.status === 'done' ? 'Mark as todo' : 'Mark as done'
                }
@@ -71,9 +71,9 @@ export default function TaskCard({
                {/* Title row */}
                <div className='flex items-start justify-between gap-2'>
                   <h3
-                     className={`font-medium text-gray-900 text-sm ${
+                     className={`font-medium text-content-primary text-sm ${
                         task.status === 'done'
-                           ? 'line-through text-gray-400'
+                           ? 'line-through text-content-muted'
                            : ''
                      }`}
                   >
@@ -89,13 +89,13 @@ export default function TaskCard({
                   <div className='flex items-center gap-1 flex-shrink-0'>
                      <button
                         onClick={onEdit}
-                        className='text-gray-400 hover:text-gray-600 text-xs px-2 py-1 rounded hover:bg-gray-100 transition-colors'
+                        className='text-content-muted hover:text-content-secondary text-xs px-2 py-1 rounded hover:bg-dark-hover transition-colors'
                      >
                         Edit
                      </button>
                      <button
                         onClick={onDelete}
-                        className='text-gray-400 hover:text-red-500 text-xs px-2 py-1 rounded hover:bg-red-50 transition-colors'
+                        className='text-content-muted hover:text-red-500 text-xs px-2 py-1 rounded hover:bg-red-50 transition-colors'
                      >
                         Delete
                      </button>
@@ -104,7 +104,7 @@ export default function TaskCard({
 
                {/* Description */}
                {task.description && (
-                  <p className='text-xs text-gray-500 mt-1'>
+                  <p className='text-xs text-content-muted mt-1'>
                      {task.description}
                   </p>
                )}
@@ -121,7 +121,7 @@ export default function TaskCard({
                   >
                      {task.status}
                   </span>
-                  <span className='text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600'>
+                  <span className='text-xs px-2 py-0.5 rounded-full bg-dark-hover text-content-secondary'>
                      {task.category}
                   </span>
                   {task.estimated_minutes && (
@@ -138,7 +138,7 @@ export default function TaskCard({
                      onChange={(e) =>
                         onStatusChange(task.id, e.target.value as TaskStatus)
                      }
-                     className='text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500'
+                     className='text-xs bg-dark-card text-content-primary border border-dark-border rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500'
                   >
                      <option value='todo'>To Do</option>
                      <option value='in-progress'>In Progress</option>
@@ -151,7 +151,7 @@ export default function TaskCard({
                   <div className='mt-3'>
                      <button
                         onClick={() => setExpanded(!expanded)}
-                        className='text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1'
+                        className='text-xs text-content-muted hover:text-content-primary flex items-center gap-1'
                      >
                         {expanded ? '▼' : '▶'} Subtasks ({completedCount}/
                         {subtasks.length})
@@ -171,7 +171,7 @@ export default function TaskCard({
                                     className='rounded text-blue-500'
                                  />
                                  <span
-                                    className={`text-xs ${subtask.completed ? 'line-through text-gray-400' : 'text-gray-600'}`}
+                                    className={`text-xs ${subtask.completed ? 'line-through text-content-muted' : 'text-content-secondary'}`}
                                  >
                                     {subtask.title}
                                  </span>
