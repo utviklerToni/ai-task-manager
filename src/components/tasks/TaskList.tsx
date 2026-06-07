@@ -191,9 +191,9 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
             </div>
 
             {/* Right — status carousel */}
-            <div className='bg-dark-card border border-dark-border rounded-xl overflow-hidden flex flex-col'>
+            <div className='bg-dark-card border border-dark-border rounded-xl flex flex-col h-64'>
                {/* Carousel header */}
-               <div className='flex items-center justify-between px-5 py-3.5 border-b border-dark-border'>
+               <div className='flex-shrink-0 flex items-center justify-between px-5 py-3.5 border-b border-dark-border'>
                   <div className='flex gap-1'>
                      {STATUS_TABS.map((tab, i) => (
                         <button
@@ -239,7 +239,7 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
                </div>
 
                {/* Task rows */}
-               <div className='max-h-64 overflow-y-auto divide-y divide-dark-border'>
+               <div className='flex-1 overflow-y-auto min-h-0 divide-y divide-dark-border'>
                   {carouselTasks.length === 0 ? (
                      <div className='flex items-center justify-center py-12'>
                         <p className='text-content-muted text-sm'>
@@ -282,7 +282,7 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
                </div>
 
                {/* Footer count */}
-               <div className='px-5 py-3 border-t border-dark-border'>
+               <div className='flex-shrink-0 px-5 py-3 border-t border-dark-border'>
                   <p className='text-xs text-content-muted'>
                      {carouselTasks.length}{' '}
                      {carouselTasks.length === 1 ? 'task' : 'tasks'} ·{' '}
