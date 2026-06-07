@@ -8,7 +8,9 @@ interface AiAssistantProps {
 }
 
 export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
-   const [activeTab, setActiveTab] = useState<'natural' | 'breakdown'>();
+   const [activeTab, setActiveTab] = useState<'natural' | 'breakdown'>(
+      'natural',
+   );
 
    // Natural language state
    const [input, setInput] = useState('');
@@ -143,7 +145,9 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
             ].map((tab) => (
                <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() =>
+                     setActiveTab(tab.id as 'natural' | 'breakdown')
+                  }
                   className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${
                      activeTab === tab.id
                         ? 'bg-purple-600 text-white'
