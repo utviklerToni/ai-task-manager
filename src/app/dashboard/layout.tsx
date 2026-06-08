@@ -1,9 +1,9 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { signOut } from '@/lib/auth';
 import Link from 'next/link';
 import { CheckSquare } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
+import SignOutButton from '@/components/ui/SignOutButton';
 
 export default async function DashboardLayout({
    children,
@@ -28,19 +28,7 @@ export default async function DashboardLayout({
                   <span className='text-sm text-content-secondary'>
                      {session.user?.name || session.user?.email}
                   </span>
-                  <form
-                     action={async () => {
-                        'use server';
-                        await signOut({ redirectTo: '/' });
-                     }}
-                  >
-                     <button
-                        type='submit'
-                        className='text-sm text-content-muted hover:text-content-primary px-3 py-1.5 rounded-lg hover:bg-dark-hover transition-colors'
-                     >
-                        Sign out
-                     </button>
-                  </form>
+                  <SignOutButton />
                </div>
             </div>
          </nav>
