@@ -1,6 +1,7 @@
 'use client';
 
 import { Subtask, Task, TaskStatus } from '@/types';
+import { Bot } from 'lucide-react';
 import { useState } from 'react';
 
 interface TaskCardProps {
@@ -11,15 +12,17 @@ interface TaskCardProps {
 }
 
 const priorityStyles = {
-   high: 'bg-red-50 text-red-700 border-red-100',
-   medium: 'bg-yellow-50 text-yellow-700 border-yellow-100',
-   low: 'bg-green-50 text-green-700 border-green-100',
+   high: 'text-xs px-2 py-0.5 rounded-full font-medium bg-red-950 text-red-400 border border-red-900',
+   medium:
+      'text-xs px-2 py-0.5 rounded-full font-medium bg-amber-950 text-amber-400 border border-amber-900',
+   low: 'text-xs px-2 py-0.5 rounded-full font-medium bg-green-950 text-green-400 border border-green-900',
 };
 
 const statusStyles = {
-   todo: 'bg-dark-hover text-content-secondary',
-   'in-progress': 'bg-blue-100 text-blue-700',
-   done: 'bg-green-100 text-green-700',
+   todo: 'text-xs px-2 py-0.5 rounded-full font-medium bg-zinc-900 text-zinc-400 border border-zinc-800',
+   'in-progress':
+      'text-xs px-2 py-0.5 rounded-full font-medium bg-blue-950 text-blue-400 border border-blue-900',
+   done: 'text-xs px-2 py-0.5 rounded-full font-medium bg-green-950 text-green-400 border border-green-900',
 };
 
 export default function TaskCard({
@@ -58,7 +61,7 @@ export default function TaskCard({
                      task.status === 'done' ? 'todo' : 'done',
                   )
                }
-               className={`mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${task.status === 'done' ? 'bg-green-500 border-green-500 text-white' : 'border-dark-border hover:border-green-400'}`}
+               className={`mt-0.5 w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${task.status === 'done' ? 'bg-green-500 border-green-500 text-white' : 'border-dark-border hover:border-green-400'}`}
                aria-label={
                   task.status === 'done' ? 'Mark as todo' : 'Mark as done'
                }
@@ -69,38 +72,21 @@ export default function TaskCard({
             {/* Content */}
             <div className='flex-1 min-w-0'>
                {/* Title row */}
-               <div className='flex items-start justify-between gap-2'>
-                  <h3
-                     className={`font-medium text-content-primary text-sm ${
-                        task.status === 'done'
-                           ? 'line-through text-content-muted'
-                           : ''
-                     }`}
-                  >
-                     {task.title}
-                     {task.ai_generated && (
-                        <span className='ml-2 text-xs text-purple-500'>
-                           🤖 AI
-                        </span>
-                     )}
-                  </h3>
-
-                  {/* Actions */}
-                  <div className='flex items-center gap-1 flex-shrink-0'>
-                     <button
-                        onClick={onEdit}
-                        className='text-content-muted hover:text-content-secondary text-xs px-2 py-1 rounded hover:bg-dark-hover transition-colors'
-                     >
-                        Edit
-                     </button>
-                     <button
-                        onClick={onDelete}
-                        className='text-content-muted hover:text-red-500 text-xs px-2 py-1 rounded hover:bg-red-50 transition-colors'
-                     >
-                        Delete
-                     </button>
-                  </div>
-               </div>
+               <h3
+                  className={`font-medium text-content-primary text-sm ${
+                     task.status === 'done'
+                        ? 'line-through text-content-muted'
+                        : ''
+                  }`}
+               >
+                  {task.title}
+                  {task.ai_generated && (
+                     <span className='ml-2 inline-flex items-center gap-1 text-xs text-purple-400 bg-purple-950 px-1.5 py-0.5 rounded-full'>
+                        <Bot size={14} />
+                        <span>AI</span>
+                     </span>
+                  )}
+               </h3>
 
                {/* Description */}
                {task.description && (
@@ -111,39 +97,50 @@ export default function TaskCard({
 
                {/* Badges */}
                <div className='flex flex-wrap gap-2 mt-2'>
-                  <span
-                     className={`text-xs px-2 py-0.5 rounded-full border font-medium ${priorityStyles[task.priority]}`}
-                  >
+                  <span className={priorityStyles[task.priority]}>
                      {task.priority}
                   </span>
-                  <span
-                     className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusStyles[task.status]}`}
-                  >
+                  <span className={statusStyles[task.status]}>
                      {task.status}
                   </span>
-                  <span className='text-xs px-2 py-0.5 rounded-full bg-dark-hover text-content-secondary'>
+                  <span className='text-xs px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-400 border border-zinc-800'>
                      {task.category}
                   </span>
                   {task.estimated_minutes && (
-                     <span className='text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600'>
+                     <span className='text-xs px-2 py-0.5 rounded-full bg-blue-950 text-blue-400'>
                         ⏱ {task.estimated_minutes}m
                      </span>
                   )}
                </div>
 
-               {/* Status selector */}
-               <div className='mt-2'>
+               {/* Footer row */}
+               <div className='border-t border-dark-border mt-3 pt-3 flex items-center justify-between'>
                   <select
                      value={task.status}
                      onChange={(e) =>
                         onStatusChange(task.id, e.target.value as TaskStatus)
                      }
-                     className='text-xs bg-dark-card text-content-primary border border-dark-border rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500'
+                     className='text-xs cursor-pointer'
                   >
                      <option value='todo'>To Do</option>
                      <option value='in-progress'>In Progress</option>
                      <option value='done'>Done</option>
                   </select>
+
+                  <div className='flex items-center gap-1'>
+                     <button
+                        onClick={onEdit}
+                        className='text-xs text-content-secondary hover:text-accent-blue px-2 py-1 rounded hover:bg-dark-hover transition-colors'
+                     >
+                        Edit
+                     </button>
+                     <button
+                        onClick={onDelete}
+                        className='text-xs text-content-secondary hover:text-accent-red px-2 py-1 rounded hover:bg-dark-hover transition-colors'
+                     >
+                        Delete
+                     </button>
+                  </div>
                </div>
 
                {/* Subtasks */}

@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { signOut } from '@/lib/auth';
 import Link from 'next/link';
 import { CheckSquare } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 
 export default async function DashboardLayout({
    children,
@@ -45,6 +46,22 @@ export default async function DashboardLayout({
          </nav>
 
          <main className='max-w-6xl mx-auto p-4 md:p-6'>{children}</main>
+         <Toaster
+            position='bottom-right'
+            toastOptions={{
+               style: {
+                  background: '#141414',
+                  color: '#ededed',
+                  border: '1px solid #262626',
+               },
+               success: {
+                  iconTheme: { primary: '#22c55e', secondary: '#141414' },
+               },
+               error: {
+                  iconTheme: { primary: '#ef4444', secondary: '#141414' },
+               },
+            }}
+         />
       </div>
    );
 }

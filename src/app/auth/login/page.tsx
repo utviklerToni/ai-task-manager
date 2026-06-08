@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CheckSquare } from 'lucide-react';
+import { CheckSquare, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
    const router = useRouter();
@@ -99,7 +99,11 @@ export default function LoginPage() {
                   disabled={loading}
                   className='w-full bg-accent-blue hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2.5 px-4 rounded-lg transition-colors text-sm mt-1'
                >
-                  {loading ? 'Signing in...' : 'Sign in'}
+                  {loading ? (
+                     <Loader2 className='w-4 h-4 animate-spin mx-auto' />
+                  ) : (
+                     'Sign in'
+                  )}
                </button>
             </form>
 

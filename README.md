@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Task Manager
 
-## Getting Started
+A full-stack task management application with AI-powered features
+built with Next.js 16, Supabase, and Anthropic Claude.
 
-First, run the development server:
+## Live Demo
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- URL: https://ai-task-manager-woad.vercel.app
+- Test email: test@example.com - (user05@email.com, user06@email.com)
+- Test password: password123 - (123456)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- User authentication with email/password
+- Create, edit, delete and track tasks
+- Filter tasks by status, priority and category
+- AI-powered natural language task creation
+- AI task breakdown into actionable subtasks
+- AI priority and time estimation suggestions
+- Data isolation — each user only sees their own tasks
+- CI/CD pipeline with GitHub Actions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech Stack
 
-## Learn More
+- Framework: Next.js 16 App Router with TypeScript
+- Auth: NextAuth v5 with JWT sessions
+- Database: Supabase (PostgreSQL) with Row Level Security
+- AI: Anthropic Claude API (claude-sonnet-4-5)
+- Styling: Tailwind CSS v3
+- Deployment: Vercel with automatic deploys on push
+- CI/CD: GitHub Actions — typecheck and lint on every push
 
-To learn more about Next.js, take a look at the following resources:
+## Why This Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Next.js App Router — full stack in one framework, Server Components for fast initial loads
+- Supabase — PostgreSQL + Auth + RLS in one free service, data isolation handled at database level
+- NextAuth v5 — JWT sessions with httpOnly cookies, secure by default
+- Claude API — best structured JSON output for AI features, reliable prompt following
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Architecture
 
-## Deploy on Vercel
+See ARCHITECTURE.md for detailed decisions and trade-offs.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Local Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repository
+
+   ```
+   git clone https://github.com/utviklerToni/ai-task-manager
+   ```
+
+2. Install dependencies
+
+   ```
+   pnpm install
+   ```
+
+3. Set up environment variables
+
+   ```
+   cp .env.example .env.local
+   ```
+
+   Fill in your Supabase, NextAuth and Anthropic API keys
+
+4. Set up Supabase
+   Create a project at supabase.com
+   Run the SQL schema from ARCHITECTURE.md
+
+5. Run development server
+   ```
+   pnpm dev
+   ```
+
+## Deployment
+
+This app is deployed on Vercel with automatic deployments via GitHub Actions.
+
+### Deploy Your Own Instance
+
+1. Push your code to GitHub
+
+2. Go to vercel.com and import your repository
+   Vercel auto-detects Next.js — no config needed
+
+3. Add all environment variables from .env.example in Vercel project settings
+
+4. Update these two variables to your Vercel URL:
+
+   ```
+   NEXTAUTH_URL=https://your-app.vercel.app
+   NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
+   ```
+
+5. Update Supabase allowed URLs:
+   Go to Supabase → Authentication → URL Configuration
+   Add your Vercel URL to Site URL and Redirect URLs
+
+6. Deploy — Vercel builds and deploys automatically
+
+### CI/CD Pipeline
+
+Every push to master triggers GitHub Actions which runs:
+
+- TypeScript type check
+- ESLint linting
+
+Vercel only deploys after CI passes.
+
+## Environment Variables
+
+See .env.example for all required variables.

@@ -82,7 +82,10 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
          const res = await fetch('/api/ai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'breakdown', title: breakdownTitle }),
+            body: JSON.stringify({
+               action: 'breakdown',
+               title: breakdownTitle,
+            }),
          });
          const data = await res.json();
          setBreakdownResult(data);
@@ -255,7 +258,9 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                         disabled={createLoading}
                         className='w-full bg-accent-green hover:bg-green-600 disabled:opacity-40 text-dark-page font-medium py-2 rounded-lg text-sm transition-colors'
                      >
-                        {createLoading ? 'Creating...' : 'Create task with subtasks'}
+                        {createLoading
+                           ? 'Creating...'
+                           : 'Create task with subtasks'}
                      </button>
                   </div>
                )}

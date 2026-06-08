@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import { Task, TaskPriority, TaskStatus } from '@/types';
 
 interface TaskFormProps {
@@ -69,12 +70,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
    };
 
    return (
-      <div className='bg-dark-card border border-dark-border rounded-xl p-5'>
-         <h2 className='font-semibold text-content-primary mb-4 text-sm'>
-            {task ? 'Edit task' : 'New task'}
-         </h2>
-
-         <form onSubmit={handleSubmit} className='space-y-3'>
+      <form onSubmit={handleSubmit} className='space-y-3'>
             <div>
                <label className={labelClass}>
                   Title <span className='text-accent-red'>*</span>
@@ -108,7 +104,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                      onChange={(e) =>
                         setPriority(e.target.value as TaskPriority)
                      }
-                     className={inputClass}
+                     className='w-full text-sm cursor-pointer'
                   >
                      <option value='low'>Low</option>
                      <option value='medium'>Medium</option>
@@ -121,7 +117,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   <select
                      value={status}
                      onChange={(e) => setStatus(e.target.value as TaskStatus)}
-                     className={inputClass}
+                     className='w-full text-sm cursor-pointer'
                   >
                      <option value='todo'>To Do</option>
                      <option value='in-progress'>In Progress</option>
@@ -134,7 +130,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   <select
                      value={category}
                      onChange={(e) => setCategory(e.target.value)}
-                     className={inputClass}
+                     className='w-full text-sm cursor-pointer'
                   >
                      <option value='general'>General</option>
                      <option value='work'>Work</option>
@@ -172,7 +168,13 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   disabled={loading || !title.trim()}
                   className='flex-1 bg-accent-blue hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg text-sm transition-colors'
                >
-                  {loading ? 'Saving...' : task ? 'Save changes' : 'Create task'}
+                  {loading ? (
+                     <Loader2 className='w-4 h-4 animate-spin mx-auto' />
+                  ) : task ? (
+                     'Save changes'
+                  ) : (
+                     'Create task'
+                  )}
                </button>
                <button
                   type='button'
@@ -182,7 +184,6 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   Cancel
                </button>
             </div>
-         </form>
-      </div>
+      </form>
    );
 }
