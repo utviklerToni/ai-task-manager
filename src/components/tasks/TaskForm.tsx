@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { Task, TaskPriority, TaskStatus } from '@/types';
 
 interface TaskFormProps {
@@ -63,7 +64,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
          if (data.estimated_minutes)
             setEstimatedMinutes(data.estimated_minutes.toString());
       } catch {
-         console.error('AI suggestion failed');
+         toast.error('AI suggestion failed. Try again.');
       }
 
       setAiLoading(false);

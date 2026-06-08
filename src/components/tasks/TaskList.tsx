@@ -82,38 +82,38 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
    );
 
    const handleCreate = async (data: Partial<Task>) => {
-      try {
-         const res = await fetch('/api/tasks', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-         });
-         const json = await res.json();
-         if (json.task) {
-            setTasks((prev) => [json.task, ...prev]);
-            setShowForm(false);
-            toast.success('Task created');
-         }
-      } catch {
-         toast.error('Something went wrong');
+      const res = await fetch('/api/tasks', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+         toast.error('Failed to create task');
+         return;
+      }
+      const json = await res.json();
+      if (json.task) {
+         setTasks((prev) => [json.task, ...prev]);
+         setShowForm(false);
+         toast.success('Task created');
       }
    };
 
    const handleUpdate = async (id: string, data: Partial<Task>) => {
-      try {
-         const res = await fetch(`/api/tasks/${id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-         });
-         const json = await res.json();
-         if (json.task) {
-            setTasks((prev) => prev.map((t) => (t.id === id ? json.task : t)));
-            setEditTask(null);
-            toast.success('Task updated');
-         }
-      } catch {
-         toast.error('Something went wrong');
+      const res = await fetch(`/api/tasks/${id}`, {
+         method: 'PATCH',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+         toast.error('Failed to update task');
+         return;
+      }
+      const json = await res.json();
+      if (json.task) {
+         setTasks((prev) => prev.map((t) => (t.id === id ? json.task : t)));
+         setEditTask(null);
+         toast.success('Task updated');
       }
    };
 
@@ -124,7 +124,13 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
    const confirmDelete = async () => {
       if (!deleteId) return;
       setDeleteLoading(true);
-      await fetch(`/api/tasks/${deleteId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/tasks/${deleteId}`, { method: 'DELETE' });
+      if (!res.ok) {
+         toast.error('Failed to delete task');
+         setDeleteId(null);
+         setDeleteLoading(false);
+         return;
+      }
       setTasks((prev) => prev.filter((t) => t.id !== deleteId));
       toast.success('Task deleted');
       setDeleteId(null);

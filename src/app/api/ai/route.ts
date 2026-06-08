@@ -14,6 +14,11 @@ export async function POST(request: NextRequest) {
 
    const { action, title, description, input } = await request.json();
 
+   const allowedActions = ['breakdown', 'priority', 'natural-language'];
+   if (!allowedActions.includes(action)) {
+      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+   }
+
    try {
       switch (action) {
          case 'breakdown':

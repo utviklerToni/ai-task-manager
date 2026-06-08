@@ -3,6 +3,7 @@
 import { Subtask, Task, TaskStatus } from '@/types';
 import { Bot } from 'lucide-react';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface TaskCardProps {
    task: Task;
@@ -35,16 +36,21 @@ export default function TaskCard({
    const [subtasks, setSubTasks] = useState<Subtask[]>(task.subtasks || []);
 
    const toggleSubtask = async (subtaskId: string) => {
+      const previous = subtasks;
       const updated = subtasks.map((s) =>
          s.id === subtaskId ? { ...s, completed: !s.completed } : s,
       );
       setSubTasks(updated);
 
-      await fetch(`/api/tasks/${task.id}`, {
+      const res = await fetch(`/api/tasks/${task.id}`, {
          method: 'PATCH',
          headers: { 'Content-Type': 'application/json' },
          body: JSON.stringify({ subtasks: updated }),
       });
+      if (!res.ok) {
+         setSubTasks(previous);
+         toast.error('Failed to update subtask');
+      }
    };
 
    const completedCount = subtasks.filter((s) => s.completed).length;

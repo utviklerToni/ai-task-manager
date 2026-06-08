@@ -15,13 +15,13 @@ export async function PATCH(
    const { id } = await params;
    const body = await request.json();
 
-   const { data: existing } = await supabaseAdmin
+   const { data: existing, error: fetchError } = await supabaseAdmin
       .from('tasks')
       .select('user_id')
       .eq('id', id)
       .single();
 
-   if (!existing || existing.user_id !== session.user.id) {
+   if (fetchError || !existing || existing.user_id !== session.user.id) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
    }
 
@@ -50,13 +50,13 @@ export async function DELETE(
 
    const { id } = await params;
 
-   const { data: existing } = await supabaseAdmin
+   const { data: existing, error: fetchError } = await supabaseAdmin
       .from('tasks')
       .select('user_id')
       .eq('id', id)
       .single();
 
-   if (!existing || existing.user_id !== session.user.id) {
+   if (fetchError || !existing || existing.user_id !== session.user.id) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
    }
 
