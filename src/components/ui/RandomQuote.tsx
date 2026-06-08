@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const QUOTES = [
    'The secret of getting ahead is getting started.',
@@ -16,13 +16,9 @@ const QUOTES = [
 ];
 
 export default function RandomQuote() {
-   const [quote, setQuote] = useState('');
-
-   useEffect(() => {
-      setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
-   }, []);
-
-   if (!quote) return null;
+   const [quote] = useState(
+      () => QUOTES[Math.floor(Math.random() * QUOTES.length)],
+   );
 
    return (
       <p className='text-content-secondary text-sm italic leading-relaxed max-w-sm mt-2'>

@@ -47,6 +47,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
    }
 
+   if (body.title.length > 255) {
+      return NextResponse.json(
+         { error: 'Title must be under 255 characters' },
+         { status: 400 },
+      );
+   }
+
+   if (body.description && body.description.length > 2000) {
+      return NextResponse.json(
+         { error: 'Description must be under 2000 characters' },
+         { status: 400 },
+      );
+   }
+
    const { data, error } = await supabaseAdmin
       .from('tasks')
       .insert({
