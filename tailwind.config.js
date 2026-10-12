@@ -21,6 +21,7 @@ module.exports = {
                muted: '#555555',
             },
             accent: {
+               anthropic: '#D97757',
                cyan: '#06b6d4',
                blue: '#3b82f6',
                purple: '#a855f7',

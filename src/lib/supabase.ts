@@ -26,14 +26,18 @@ export async function createSupabaseServerClient() {
    );
 }
 
-// admin client bypasses RLS — needed for operations like creating a new user account where there's no session yet.
-export const supabaseAdmin = createClient(
-   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-   process.env.SUPABASE_SERVICE_ROLE_KEY!,
-   {
-      auth: {
-         autoRefreshToken: false,
-         persistSession: false,
+export function createSupabaseAdminClient() {
+   return createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+         auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+         },
       },
-   },
-);
+   );
+}
+
+// admin client bypasses RLS — needed for operations like creating a new user account where there's no session yet.
+export const supabaseAdmin = createSupabaseAdminClient();

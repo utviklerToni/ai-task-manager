@@ -17,6 +17,7 @@ built with Next.js 16, Supabase, and Anthropic Claude.
 - AI-powered natural language task creation
 - AI task breakdown into actionable subtasks
 - AI priority and time estimation suggestions
+- Six AI requests per user per UTC day, shared across all AI features
 - Data isolation — each user only sees their own tasks
 - CI/CD pipeline with GitHub Actions
 
@@ -67,14 +68,37 @@ See ARCHITECTURE.md for detailed decisions and trade-offs.
    Create a project at supabase.com
    Run the SQL schema from ARCHITECTURE.md
 
+   Then run `supabase/migrations/202610120001_ai_daily_limit.sql` in the
+   Supabase SQL Editor (or through your migration tooling) before deploying.
+   This adds the persistent AI allowance counter and a server-only function
+   that atomically reserves one of six daily requests. If the migration is
+   missing or the counter is unavailable, AI requests return 503 without
+   calling Anthropic.
+
 5. Run development server
    ```
    pnpm dev
    ```
 
+## AI usage limits
+
+Each signed-in user can make six AI requests per day, resetting at midnight UTC.
+Task generation, breakdowns, and priority suggestions share the same allowance.
+Requests are counted before contacting Anthropic, including failed AI attempts;
+invalid inputs and unsigned-in requests do not consume the allowance. The
+seventh valid request returns HTTP 429 with a `Retry-After` header. Orange
+notices explain the limit before each AI action.
+
+Run `pnpm test` for the API guard tests. To verify the database function, run
+`supabase/tests/ai_daily_limit.sql` in a test database after applying the migration.
+The SQL tests roll back their fixtures. These are per-user request limits, not
+an app-wide dollar budget.
+
 ## Deployment
 
 This app is deployed on Vercel with automatic deployments via GitHub Actions.
+
+Apply the AI daily-limit migration above before deploying the updated app.
 
 ### Deploy Your Own Instance
 
@@ -104,6 +128,7 @@ Every push to master triggers GitHub Actions which runs:
 
 - TypeScript type check
 - ESLint linting
+- AI request-limit tests
 
 Vercel only deploys after CI passes.
 
