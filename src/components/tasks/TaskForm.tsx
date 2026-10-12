@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Task, TaskPriority, TaskStatus } from '@/types';
+import AiUsageWarning from '@/components/ai/AiUsageWarning';
 
 interface TaskFormProps {
    task?: Task;
@@ -29,6 +30,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
    );
    const [loading, setLoading] = useState(false);
    const [aiLoading, setAiLoading] = useState(false);
+   const [aiError, setAiError] = useState('');
 
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -52,6 +54,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
    const handleAiSuggest = async () => {
       if (!title.trim()) return;
       setAiLoading(true);
+      setAiError('');
 
       try {
          const res = await fetch('/api/ai', {
@@ -60,11 +63,18 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
             body: JSON.stringify({ action: 'priority', title, description }),
          });
          const data = await res.json();
+         if (!res.ok) {
+            throw new Error(data.error || 'AI suggestion failed. Try again.');
+         }
          if (data.priority) setPriority(data.priority);
          if (data.estimated_minutes)
             setEstimatedMinutes(data.estimated_minutes.toString());
-      } catch {
-         toast.error('AI suggestion failed. Try again.');
+      } catch (error) {
+         const message = error instanceof Error
+            ? error.message
+            : 'AI suggestion failed. Try again.';
+         setAiError(message);
+         toast.error(message);
       }
 
       setAiLoading(false);
@@ -154,6 +164,8 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                />
             </div>
 
+            <AiUsageWarning />
+
             <button
                type='button'
                onClick={handleAiSuggest}
@@ -162,6 +174,12 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
             >
                {aiLoading ? 'Thinking...' : '✦ AI: Suggest priority & estimate'}
             </button>
+
+            {aiError && (
+               <p role='alert' className='text-xs text-accent-anthropic'>
+                  {aiError}
+               </p>
+            )}
 
             <div className='flex gap-2 pt-1'>
                <button

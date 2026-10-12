@@ -3,6 +3,7 @@
 import { Task } from '@/types';
 import { useState } from 'react';
 import { Sparkles, Wrench } from 'lucide-react';
+import AiUsageWarning from './AiUsageWarning';
 
 interface AiAssistantProps {
    onTasksCreated: (tasks: Task[]) => void;
@@ -22,6 +23,7 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
 
    const [breakdownTitle, setBreakdownTitle] = useState('');
    const [breakdownLoading, setBreakdownLoading] = useState(false);
+   const [breakdownError, setBreakdownError] = useState('');
    const [breakdownResult, setBreakdownResult] = useState<{
       subtasks: Array<{ id: string; title: string; completed: boolean }>;
       estimated_minutes?: number;
@@ -41,6 +43,10 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
             body: JSON.stringify({ action: 'natural-language', input }),
          });
          const aiData = await aiRes.json();
+
+         if (!aiRes.ok) {
+            throw new Error(aiData.error || 'AI request failed. Please try again.');
+         }
 
          if (!aiData.tasks?.length) {
             setNlMessage('No tasks generated. Try being more specific.');
@@ -66,8 +72,12 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                `Created ${createdTasks.length} task${createdTasks.length > 1 ? 's' : ''}`,
             );
          }
-      } catch {
-         setNlMessage('Something went wrong. Please try again.');
+      } catch (error) {
+         setNlMessage(
+            error instanceof Error
+               ? error.message
+               : 'Something went wrong. Please try again.',
+         );
       }
 
       setNlLoading(false);
@@ -77,6 +87,7 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
       if (!breakdownTitle.trim()) return;
       setBreakdownLoading(true);
       setBreakdownResult(null);
+      setBreakdownError('');
 
       try {
          const res = await fetch('/api/ai', {
@@ -88,9 +99,17 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
             }),
          });
          const data = await res.json();
+         if (!res.ok) {
+            throw new Error(data.error || 'AI request failed. Please try again.');
+         }
          setBreakdownResult(data);
-      } catch {
+      } catch (error) {
          setBreakdownResult(null);
+         setBreakdownError(
+            error instanceof Error
+               ? error.message
+               : 'Something went wrong. Please try again.',
+         );
       }
 
       setBreakdownLoading(false);
@@ -172,6 +191,8 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                   className={`${inputClass} resize-none`}
                />
 
+               <AiUsageWarning />
+
                <button
                   onClick={handleNaturalLanguage}
                   disabled={nlLoading || !input.trim()}
@@ -182,10 +203,11 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
 
                {nlMessage && (
                   <p
+                     role='status'
                      className={`text-xs ${
                         nlMessage.startsWith('Created')
                            ? 'text-accent-green'
-                           : 'text-accent-red'
+                           : 'text-accent-anthropic'
                      }`}
                   >
                      {nlMessage}
@@ -208,6 +230,8 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                   className={inputClass}
                />
 
+               <AiUsageWarning />
+
                <button
                   onClick={handleBreakdown}
                   disabled={breakdownLoading || !breakdownTitle.trim()}
@@ -215,6 +239,12 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
                >
                   {breakdownLoading ? 'Breaking down...' : '✦ Break down task'}
                </button>
+
+               {breakdownError && (
+                  <p role='alert' className='text-xs text-accent-anthropic'>
+                     {breakdownError}
+                  </p>
+               )}
 
                {breakdownResult && (
                   <div className='bg-dark-hover border border-dark-border rounded-lg p-4 space-y-3'>

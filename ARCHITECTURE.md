@@ -132,6 +132,15 @@ POST   /api/ai                 all AI features (action param routes internally)
 
 I put all AI features behind a single `/api/ai` route with an `action` parameter instead of separate routes. The reasoning: all three features (breakdown, priority, natural-language) share the same auth check, the same error handling shape, and the same response format. One route, one place to maintain.
 
+The route also enforces six AI requests per user per UTC day, shared by all
+actions. After validating input, it calls the service-role-only
+`consume_ai_request` database function to atomically reserve an allowance.
+The `ai_daily_usage` table stores one row per user, so counts persist across
+deployments and concurrent requests cannot bypass the limit. Failed AI attempts
+still count. Exhausted allowances return 429 with `Retry-After`; an unavailable
+counter returns 503 without calling Anthropic. Apply
+`supabase/migrations/202610120001_ai_daily_limit.sql` before deploying this route.
+
 **Ownership verification on mutations**
 
 Before any PATCH or DELETE, I verify the task belongs to the current user:
@@ -211,7 +220,7 @@ I disabled email verification in Supabase for ease of testing. In production thi
 
 1. **Add React Query** for server state management — automatic background refetching, better loading states, proper cache invalidation
 2. **Add E2E tests with Cypress** — at minimum, test the full auth flow and task CRUD
-3. **Add rate limiting on AI endpoints** — right now anyone with a valid session can hammer the Claude API
+3. **Add an app-wide AI spending budget** — the six-per-user daily limit does not cap total spending across users
 4. **Implement optimistic updates** — update UI immediately, roll back on API failure
 5. **Add due date notifications** — tasks with approaching due dates should surface prominently
 6. **Proper error boundaries** — right now a React error in a component crashes the whole page
