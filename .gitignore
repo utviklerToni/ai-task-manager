@@ -2,6 +2,7 @@
 
 #journal
 /journal
+/.vscode
 
 # dependencies
 /node_modules

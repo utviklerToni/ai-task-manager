@@ -103,15 +103,20 @@ Respond with ONLY a JSON object in this exact format, no other text:
       "estimated_minutes": 30,
       "category": "general",
       "subtasks": [
-        { "id": "1", "title": "subtask", "completed": false }
-      ]
+        { "id": "1", "title": "subtask", "completed": false, 
+          "subtask_guidance: "each subtask should be able to provide an expansion of the important steps where necessary" 
+        },
+        
+      ],     
     }
   ],
   "message": "brief note"
 }
 
+
 Priority must be: "low", "medium", or "high"
 Category suggestions: "work", "personal", "health", "learning", "general"
+
 Generate 1-4 tasks maximum. Be specific and actionable.`;
 
    const response = await client.messages.create({
@@ -125,6 +130,7 @@ Generate 1-4 tasks maximum. Be specific and actionable.`;
 
    try {
       const clean = text.replace(/```json|```/g, '').trim();
+      console.log(clean);
       return JSON.parse(clean);
    } catch {
       return { message: 'Could not parse AI response', tasks: [] };
