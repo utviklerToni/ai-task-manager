@@ -1,5 +1,10 @@
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase';
+import {
+   deleteEmptyGroups,
+   stripGroupFields,
+   TASK_SELECT,
+} from '@/lib/taskGroups';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PATCH(
@@ -13,7 +18,7 @@ export async function PATCH(
    }
 
    const { id } = await params;
-   const body = await request.json();
+   const body = stripGroupFields(await request.json());
 
    const { data: existing, error: fetchError } = await supabaseAdmin
       .from('tasks')
@@ -29,7 +34,7 @@ export async function PATCH(
       .from('tasks')
       .update(body)
       .eq('id', id)
-      .select()
+      .select(TASK_SELECT)
       .single();
 
    if (error) {
@@ -52,7 +57,7 @@ export async function DELETE(
 
    const { data: existing, error: fetchError } = await supabaseAdmin
       .from('tasks')
-      .select('user_id')
+      .select('user_id, group_id')
       .eq('id', id)
       .single();
 
@@ -65,6 +70,8 @@ export async function DELETE(
    if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
    }
+
+   await deleteEmptyGroups(session.user.id, [existing.group_id]);
 
    return NextResponse.json({ success: true });
 }

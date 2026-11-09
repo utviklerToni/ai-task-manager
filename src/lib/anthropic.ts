@@ -93,8 +93,17 @@ export async function createTasksFromNaturalLanguage(
 
 Input: "${input}"
 
+Rules:
+- Generate 1-4 tasks maximum. Be specific and actionable.
+- If the input needs several tasks, list them in the order they should be done (e.g. shop for ingredients before baking).
+- "group_title" is a short name (max 60 characters) for the overall goal that ties the tasks together.
+- Each task has its own subtasks. Each subtask is a concrete step; spell out the important details where needed (e.g. list the ingredients to buy).
+- Priority must be: "low", "medium", or "high"
+- Category suggestions: "work", "personal", "health", "learning", "general"
+
 Respond with ONLY a JSON object in this exact format, no other text:
 {
+  "group_title": "short goal name",
   "tasks": [
     {
       "title": "task title",
@@ -108,11 +117,7 @@ Respond with ONLY a JSON object in this exact format, no other text:
     }
   ],
   "message": "brief note"
-}
-
-Priority must be: "low", "medium", or "high"
-Category suggestions: "work", "personal", "health", "learning", "general"
-Generate 1-4 tasks maximum. Be specific and actionable.`;
+}`;
 
    const response = await client.messages.create({
       model: MODEL,

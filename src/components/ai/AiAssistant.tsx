@@ -54,12 +54,27 @@ export default function AiAssistant({ onTasksCreated }: AiAssistantProps) {
             return;
          }
 
-         const createdTasks: Task[] = [];
-         for (const taskData of aiData.tasks) {
+         let createdTasks: Task[] = [];
+         if (aiData.tasks.length > 1) {
+            // Related tasks from one request are saved together as a group.
+            const res = await fetch('/api/task-groups', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({
+                  title: (aiData.group_title || input).trim().slice(0, 80),
+                  tasks: aiData.tasks,
+               }),
+            });
+            const json = await res.json();
+            if (!res.ok) {
+               throw new Error(json.error || 'Could not save the tasks.');
+            }
+            createdTasks = json.tasks || [];
+         } else {
             const res = await fetch('/api/tasks', {
                method: 'POST',
                headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({ ...taskData, ai_generated: true }),
+               body: JSON.stringify({ ...aiData.tasks[0], ai_generated: true }),
             });
             const json = await res.json();
             if (json.task) createdTasks.push(json.task);

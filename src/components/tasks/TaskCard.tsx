@@ -1,7 +1,7 @@
 'use client';
 
 import { Subtask, Task, TaskStatus } from '@/types';
-import { Bot } from 'lucide-react';
+import { Bot, Target } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -10,6 +10,11 @@ interface TaskCardProps {
    onStatusChange: (id: string, status: TaskStatus) => void;
    onEdit: () => void;
    onDelete: () => void;
+   selectable?: boolean;
+   selected?: boolean;
+   onToggleSelect?: () => void;
+   highlighted?: boolean;
+   onSubtasksChange?: (id: string, subtasks: Subtask[]) => void;
 }
 
 const priorityStyles = {
@@ -31,6 +36,11 @@ export default function TaskCard({
    onStatusChange,
    onEdit,
    onDelete,
+   selectable = false,
+   selected = false,
+   onToggleSelect,
+   highlighted = false,
+   onSubtasksChange,
 }: TaskCardProps) {
    const [expanded, setExpanded] = useState(false);
    const [subtasks, setSubTasks] = useState<Subtask[]>(task.subtasks || []);
@@ -50,16 +60,32 @@ export default function TaskCard({
       if (!res.ok) {
          setSubTasks(previous);
          toast.error('Failed to update subtask');
+         return;
       }
+      onSubtasksChange?.(task.id, updated);
    };
 
    const completedCount = subtasks.filter((s) => s.completed).length;
 
    return (
       <div
-         className={`bg-dark-card border border-dark-border rounded-xl p-4 transition-all ${task.status === 'done' ? 'opacity-60' : ''}`}
+         id={`task-${task.id}`}
+         className={`bg-dark-card border rounded-xl p-4 transition-all scroll-mt-6 ${
+            highlighted || selected
+               ? 'border-accent-purple ring-1 ring-accent-purple'
+               : 'border-dark-border'
+         } ${task.status === 'done' && !highlighted ? 'opacity-60' : ''}`}
       >
          <div className='flex items-start gap-3'>
+            {selectable && (
+               <input
+                  type='checkbox'
+                  checked={selected}
+                  onChange={onToggleSelect}
+                  aria-label={`Select ${task.title}`}
+                  className='mt-1 w-4 h-4 flex-shrink-0 cursor-pointer accent-purple-500'
+               />
+            )}
             <button
                onClick={() =>
                   onStatusChange(
@@ -93,6 +119,15 @@ export default function TaskCard({
                      </span>
                   )}
                </h3>
+
+               {/* Group this task belongs to */}
+               {task.group && (
+                  <p className='mt-1 inline-flex items-center gap-1 text-xs text-content-secondary'>
+                     <Target className='w-3 h-3' />
+                     {task.group.title} · step{' '}
+                     {(task.group_position ?? 0) + 1}
+                  </p>
+               )}
 
                {/* Description */}
                {task.description && (

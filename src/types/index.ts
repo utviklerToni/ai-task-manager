@@ -19,8 +19,16 @@ export interface Task {
    estimated_minutes?: number;
    subtasks: Subtask[];
    ai_generated: boolean;
+   group_id?: string | null;
+   group_position?: number | null;
+   group?: TaskGroupSummary | null;
    created_at: string;
    updated_at: string;
+}
+
+export interface TaskGroupSummary {
+   id: string;
+   title: string;
 }
 
 export interface CreateTaskInput {
@@ -65,6 +73,7 @@ export interface AiTaskSuggestion {
 }
 
 export interface AiResponse {
+   group_title?: string;
    tasks?: AiTaskSuggestion[];
    subtasks?: Subtask[];
    priority?: TaskPriority;

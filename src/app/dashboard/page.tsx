@@ -2,11 +2,12 @@ import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase';
 import { Task } from '@/types';
 import TaskList from '@/components/tasks/TaskList';
+import { TASK_SELECT } from '@/lib/taskGroups';
 
 async function getTasks(userId: string): Promise<Task[]> {
    const { data, error } = await supabaseAdmin
       .from('tasks')
-      .select('*')
+      .select(TASK_SELECT)
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 

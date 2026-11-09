@@ -1,11 +1,12 @@
 'use client';
 
-import { Task, TaskFilters, TaskPriority, TaskStatus } from '@/types';
-import { useMemo, useState } from 'react';
+import { Subtask, Task, TaskFilters, TaskPriority, TaskStatus } from '@/types';
+import { useEffect, useMemo, useState } from 'react';
 import { Bot, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TaskForm from './TaskForm';
 import TaskCard from './TaskCard';
+import TaskGroupsPanel, { groupTasks } from './TaskGroupsPanel';
 import AiAssistant from '../ai/AiAssistant';
 import RandomQuote from '../ui/RandomQuote';
 
@@ -36,8 +37,23 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
    const [editTask, setEditTask] = useState<Task | null>(null);
    const [showAi, setShowAi] = useState(false);
    const [tabIndex, setTabIndex] = useState(0);
-   const [deleteId, setDeleteId] = useState<string | null>(null);
+   const [deleteIds, setDeleteIds] = useState<string[] | null>(null);
    const [deleteLoading, setDeleteLoading] = useState(false);
+   const [selectMode, setSelectMode] = useState(false);
+   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+   const [highlightId, setHighlightId] = useState<string | null>(null);
+
+   const hasGroups = useMemo(() => groupTasks(tasks).length > 0, [tasks]);
+
+   // Scroll to a task picked in the groups panel and flash its card.
+   useEffect(() => {
+      if (!highlightId) return;
+      document
+         .getElementById(`task-${highlightId}`)
+         ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const timer = setTimeout(() => setHighlightId(null), 2000);
+      return () => clearTimeout(timer);
+   }, [highlightId]);
 
    const firstName =
       userName?.split(' ')[0] || userName?.split('@')[0] || 'there';
@@ -118,23 +134,62 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
    };
 
    const handleDelete = (id: string) => {
-      setDeleteId(id);
+      setDeleteIds([id]);
    };
 
    const confirmDelete = async () => {
-      if (!deleteId) return;
+      if (!deleteIds?.length) return;
       setDeleteLoading(true);
-      const res = await fetch(`/api/tasks/${deleteId}`, { method: 'DELETE' });
+      const res = await fetch('/api/tasks', {
+         method: 'DELETE',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ ids: deleteIds }),
+      });
       if (!res.ok) {
-         toast.error('Failed to delete task');
-         setDeleteId(null);
+         toast.error(
+            deleteIds.length > 1 ? 'Failed to delete tasks' : 'Failed to delete task',
+         );
+         setDeleteIds(null);
          setDeleteLoading(false);
          return;
       }
-      setTasks((prev) => prev.filter((t) => t.id !== deleteId));
-      toast.success('Task deleted');
-      setDeleteId(null);
+      const { deletedIds }: { deletedIds: string[] } = await res.json();
+      const removed = new Set(deletedIds);
+      setTasks((prev) => prev.filter((t) => !removed.has(t.id)));
+      setSelectedIds((prev) => new Set([...prev].filter((id) => !removed.has(id))));
+      toast.success(
+         removed.size === 1 ? 'Task deleted' : `${removed.size} tasks deleted`,
+      );
+      if (deleteIds.length > 1) setSelectMode(false);
+      setDeleteIds(null);
       setDeleteLoading(false);
+   };
+
+   const toggleSelected = (id: string) => {
+      setSelectedIds((prev) => {
+         const next = new Set(prev);
+         if (next.has(id)) next.delete(id);
+         else next.add(id);
+         return next;
+      });
+   };
+
+   const exitSelectMode = () => {
+      setSelectMode(false);
+      setSelectedIds(new Set());
+   };
+
+   const allFilteredSelected =
+      filtered.length > 0 && filtered.every((t) => selectedIds.has(t.id));
+
+   const handleSelectFromGroup = (id: string) => {
+      // Clear filters so the picked task's card is on the board.
+      setFilters({ status: 'all', priority: 'all', category: 'all', search: '' });
+      setHighlightId(id);
+   };
+
+   const handleSubtasksChange = (id: string, subtasks: Subtask[]) => {
+      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, subtasks } : t)));
    };
 
    const handleStatusChange = (id: string, status: TaskStatus) => {
@@ -374,37 +429,103 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
             </select>
          </div>
 
-         {/* Results count */}
-         <p className='text-sm text-content-muted mb-3'>
-            Showing {filtered.length} of {tasks.length} tasks
-         </p>
+         <div
+            className={
+               hasGroups
+                  ? 'grid gap-4 grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)] items-start'
+                  : ''
+            }
+         >
+            {hasGroups && (
+               <aside className='lg:sticky lg:top-4'>
+                  <TaskGroupsPanel
+                     tasks={tasks}
+                     onSelectTask={handleSelectFromGroup}
+                  />
+               </aside>
+            )}
 
-         {/* Empty state */}
-         {filtered.length === 0 && (
-            <div className='text-center py-16 bg-dark-card rounded-xl border border-dark-border'>
-               <p className='text-4xl mb-3'>📋</p>
-               <p className='font-medium text-content-primary'>
-                  No tasks found
-               </p>
-               <p className='text-sm text-content-muted mt-1'>
-                  {tasks.length === 0
-                     ? 'Create your first task to get started'
-                     : 'Try adjusting your filters'}
-               </p>
+            <div>
+               {/* Results count + bulk actions */}
+               <div className='flex flex-wrap items-center justify-between gap-2 mb-3'>
+                  <p className='text-sm text-content-muted'>
+                     Showing {filtered.length} of {tasks.length} tasks
+                  </p>
+
+                  {tasks.length > 0 &&
+                     (selectMode ? (
+                        <div className='flex items-center gap-1'>
+                           <button
+                              onClick={() =>
+                                 setSelectedIds(
+                                    allFilteredSelected
+                                       ? new Set()
+                                       : new Set(filtered.map((t) => t.id)),
+                                 )
+                              }
+                              className='text-xs text-content-secondary hover:text-content-primary px-2.5 py-1.5 rounded-md hover:bg-dark-hover transition-colors'
+                           >
+                              {allFilteredSelected
+                                 ? 'Clear selection'
+                                 : `Select all (${filtered.length})`}
+                           </button>
+                           <button
+                              onClick={() => setDeleteIds([...selectedIds])}
+                              disabled={selectedIds.size === 0}
+                              className='text-xs font-medium text-white bg-accent-red hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed px-2.5 py-1.5 rounded-md transition-colors'
+                           >
+                              Delete selected ({selectedIds.size})
+                           </button>
+                           <button
+                              onClick={exitSelectMode}
+                              className='text-xs text-content-secondary hover:text-content-primary px-2.5 py-1.5 rounded-md hover:bg-dark-hover transition-colors'
+                           >
+                              Cancel
+                           </button>
+                        </div>
+                     ) : (
+                        <button
+                           onClick={() => setSelectMode(true)}
+                           className='text-xs text-content-secondary hover:text-content-primary px-2.5 py-1.5 rounded-md hover:bg-dark-hover transition-colors'
+                        >
+                           Select
+                        </button>
+                     ))}
+               </div>
+
+               {/* Empty state */}
+               {filtered.length === 0 && (
+                  <div className='text-center py-16 bg-dark-card rounded-xl border border-dark-border'>
+                     <p className='text-4xl mb-3'>📋</p>
+                     <p className='font-medium text-content-primary'>
+                        No tasks found
+                     </p>
+                     <p className='text-sm text-content-muted mt-1'>
+                        {tasks.length === 0
+                           ? 'Create your first task to get started'
+                           : 'Try adjusting your filters'}
+                     </p>
+                  </div>
+               )}
+
+               {/* Task grid */}
+               <div className='grid gap-3 grid-cols-1 md:grid-cols-2 items-start'>
+                  {filtered.map((task) => (
+                     <TaskCard
+                        key={task.id}
+                        task={task}
+                        onStatusChange={handleStatusChange}
+                        onEdit={() => setEditTask(task)}
+                        onDelete={() => handleDelete(task.id)}
+                        selectable={selectMode}
+                        selected={selectedIds.has(task.id)}
+                        onToggleSelect={() => toggleSelected(task.id)}
+                        highlighted={highlightId === task.id}
+                        onSubtasksChange={handleSubtasksChange}
+                     />
+                  ))}
+               </div>
             </div>
-         )}
-
-         {/* Task grid */}
-         <div className='grid gap-3 grid-cols-1 md:grid-cols-2 items-start'>
-            {filtered.map((task) => (
-               <TaskCard
-                  key={task.id}
-                  task={task}
-                  onStatusChange={handleStatusChange}
-                  onEdit={() => setEditTask(task)}
-                  onDelete={() => handleDelete(task.id)}
-               />
-            ))}
          </div>
 
          {(showForm || editTask) && (
@@ -442,18 +563,20 @@ export default function TaskList({ initialTasks, userName }: TaskListProps) {
             </div>
          )}
 
-         {deleteId && (
+         {deleteIds && (
             <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4'>
                <div className='bg-dark-card border border-dark-border rounded-xl p-6 w-full max-w-sm'>
                   <h3 className='text-content-primary font-semibold text-base mb-2'>
-                     Delete task?
+                     {deleteIds.length === 1
+                        ? 'Delete task?'
+                        : `Delete ${deleteIds.length} tasks?`}
                   </h3>
                   <p className='text-content-secondary text-sm mb-6'>
                      This action cannot be undone.
                   </p>
                   <div className='flex gap-3'>
                      <button
-                        onClick={() => setDeleteId(null)}
+                        onClick={() => setDeleteIds(null)}
                         className='flex-1 bg-dark-hover hover:bg-dark-border text-content-primary font-medium py-2 rounded-lg text-sm transition-colors'
                      >
                         Cancel
